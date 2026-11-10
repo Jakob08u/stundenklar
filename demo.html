@@ -265,6 +265,16 @@ select.infield{appearance:none;-webkit-appearance:none;padding-right:30px;cursor
 .vtag.wait{background:color-mix(in srgb,var(--orange) 16%,transparent);color:var(--orange-t)}
 .vtag.stop{background:color-mix(in srgb,var(--red) 14%,transparent);color:var(--red-t)}
 .vnote{color:var(--red-t)!important;margin-top:4px}
+.tick-row{align-items:flex-start}
+.tick{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--label3);display:grid;place-items:center;margin-top:9px;transition:background .15s,border-color .15s}
+.tick-row[aria-pressed="true"] .tick{background:var(--green);border-color:var(--green);color:#fff}
+.tick svg.i{width:15px;height:15px;stroke-width:3}
+.tick-row .lbl{padding-top:11px;padding-bottom:11px}
+.iconbtn{border:0;background:none;color:var(--red);padding:8px;margin-right:-6px;cursor:pointer;display:grid;place-items:center;flex:none}
+.iconbtn svg.i{width:20px;height:20px}
+.row input.tdate{width:auto;max-width:11em;font:inherit;color:var(--label2);-webkit-appearance:none;appearance:none;background:transparent}
+a.btn{text-decoration:none}
+.btnrow .btn{min-width:0}
 .extlink{justify-self:start;display:inline-flex;align-items:center;gap:4px;margin-top:4px;color:var(--tint);font-size:15px;text-decoration:none}
 .extlink svg.i{width:15px;height:15px;stroke-width:2.4}
 @media (prefers-reduced-motion:reduce){.live-pill::before{animation:none}}
@@ -490,6 +500,7 @@ const ICONS = {
   euro:'<circle cx="12" cy="12" r="8.5"/><path d="M15.4 8.8a3.8 3.8 0 1 0 0 6.4M7.6 11h5.8M7.6 13.2h5.8"/>',
   person:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="10" r="3"/><path d="M6.6 18.2c1.3-2 3.2-3 5.4-3s4.1 1 5.4 3"/>',
   plus:'<path d="M12 5v14M5 12h14"/>', minus:'<path d="M5 12h14"/>',
+  phone:'<path d="M6.6 3.5h2.6l1.6 4.3-2.1 1.4a11 11 0 0 0 6.1 6.1l1.4-2.1 4.3 1.6v2.6a2 2 0 0 1-2.2 2C10.4 18.9 5.1 13.6 4.6 5.7a2 2 0 0 1 2-2.2z"/>',
   chevR:'<path d="M9 5l7 7-7 7"/>', chevL:'<path d="M15 5l-7 7 7 7"/>',
   play:'<path d="M8 5.5v13l10.5-6.5z" fill="currentColor"/>',
   stop:'<rect x="6.5" y="6.5" width="11" height="11" rx="2.5" fill="currentColor"/>',
@@ -585,8 +596,9 @@ function demoMia(){
   ["2026-08-03","2026-08-04","2026-08-05"].forEach(d => f(d, "08:00", "14:30", 30));
   return {persona:"mia", demoToday:"2026-08-06",
     profile:{name:"Mia", age:15, status:"schule", vsp:true, land:"Nordrhein-Westfalen", ort:"Ahaus", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
-    job:{title:"Supermarkt Brandt", type:"ferienjob", activity:"handel", wage:10.5, employer:"betrieb", monthly:0, weekly:0},
-    ausb:defaultAusb(), shifts, ads:[], timer:null, onboarded:true, lastFerien:true};
+    job:{title:"Supermarkt Brandt", type:"ferienjob", activity:"handel", wage:10.5, employer:"betrieb", monthly:0, weekly:0, since:"2026-07-20", until:"2026-08-21"},
+    ausb:defaultAusb(), shifts, ads:[], timer:null, onboarded:true, lastFerien:true,
+    tools:{lohn:{m:{"2026-07":{got:600, abr:false}}}, vertrag:{c:{job:{name:true, lohn:true, beginn:true, ende:true, taet:true}}}}};
 }
 function demoLeon(){
   const {shifts, add} = shiftMaker();
@@ -601,9 +613,10 @@ function demoLeon(){
   w("2026-11-17", "Aktionsfläche aufgebaut"); w("2026-11-18", "Kasse und Abrechnung");
   return {persona:"leon", demoToday:"2026-11-19",
     profile:{name:"Leon", age:17, status:"betrAusb", vsp:false, land:"Niedersachsen", ort:"Nordhorn", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
-    job:{title:"Modehaus Kemper", type:"verguetung", activity:"handel", wage:0, employer:"betrieb", monthly:780, weekly:0},
+    job:{title:"Modehaus Kemper", type:"verguetung", activity:"handel", wage:0, employer:"betrieb", monthly:780, weekly:0, since:"2025-08-01"},
     ausb:{beruf:"Kaufmann im Einzelhandel", start:2025, jahr:2, soll:40, urlaub:24, art:"betrieb", eltern:true},
-    shifts, ads:[], timer:null, onboarded:true, lastFerien:false};
+    shifts, ads:[], timer:null, onboarded:true, lastFerien:false,
+    tools:{lohn:{m:{"2026-09":{got:780, abr:true}, "2026-10":{got:780, abr:true}}}, kuend:{wer:"ich", grund:"anderer"}}};
 }
 function demoSara(){
   const {shifts, add} = shiftMaker();
@@ -614,9 +627,11 @@ function demoSara(){
   w("2026-11-16", "Messe vorbereitet"); w("2026-11-17", "Messe-Aufbau", "08:00", "19:30", 30); w("2026-11-18", "Nachbereitung Messe");
   return {persona:"sara", demoToday:"2026-11-19",
     profile:{name:"Sara", age:20, status:"dual", vsp:false, land:"Hessen", ort:"Kassel", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
-    job:{title:"Weber Logistik GmbH", type:"verguetung", activity:"buero", wage:0, employer:"betrieb", monthly:1150, weekly:0},
+    job:{title:"Weber Logistik GmbH", type:"verguetung", activity:"buero", wage:0, employer:"betrieb", monthly:1150, weekly:0, since:"2025-10-01"},
     ausb:{beruf:"BWL (dual)", start:2025, jahr:2, soll:40, urlaub:25, art:"praxis", eltern:false},
-    shifts, ads:[], timer:null, onboarded:true, lastFerien:false};
+    shifts, ads:[], timer:null, onboarded:true, lastFerien:false,
+    tools:{lohn:{m:{"2026-09":{got:1150, abr:true}, "2026-10":{got:1150, abr:true}}}, steuer:{jahr:2025, brutto:13800, lst:312, soli:0, kist:0, sv:true},
+      foerder:{wohnen:"allein"}, kompass:{ein:"", p:[{name:"Handyvertrag", art:"handy", betrag:19.99, tag:15}, {name:"Winterjacke", art:"later", betrag:79.99, tag:22}, {name:"Streaming", art:"abo", betrag:13.99, tag:1}, {name:"Fitnessstudio", art:"abo", betrag:29.9, tag:3}]}}};
 }
 const PERSONAS = {
   mia:{label:"Mia, 15", sub:"Ferienjob im Supermarkt", make:demoMia},
@@ -628,7 +643,7 @@ function emptyState(){
   return {
     profile:{name:"", age:16, status:"schule", vsp:true, land:"", ort:"", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
     job:{title:"", type:"minijob", activity:"handel", wage:12, employer:"betrieb", monthly:0, weekly:0},
-    ausb:defaultAusb(), shifts:[], ads:[], timer:null, onboarded:false, lastFerien:false
+    ausb:defaultAusb(), shifts:[], ads:[], tools:{}, timer:null, onboarded:false, lastFerien:false
   };
 }
 function load(){
@@ -637,7 +652,7 @@ function load(){
     const raw = localStorage.getItem(STORE);
     if (raw){
       const s = JSON.parse(raw), e = emptyState();
-      return {...e, ...s, profile:{...e.profile, ...(s.profile||{})}, job:{...e.job, ...(s.job||{})}, ausb:{...e.ausb, ...(s.ausb||{})}, shifts:Array.isArray(s.shifts) ? s.shifts : [], ads:Array.isArray(s.ads) ? s.ads : []};
+      return {...e, ...s, profile:{...e.profile, ...(s.profile||{})}, job:{...e.job, ...(s.job||{})}, ausb:{...e.ausb, ...(s.ausb||{})}, shifts:Array.isArray(s.shifts) ? s.shifts : [], ads:Array.isArray(s.ads) ? s.ads : [], tools:(s.tools && typeof s.tools === "object") ? s.tools : {}};
     }
   } catch(e) {}
   return emptyState();
@@ -1833,6 +1848,10 @@ function renderToday(){
   } else if (!az && (j.wage || 0) < RULES.mindestlohn){
     blick.push(`<div class="row"><span class="ico" style="background:var(--red)">${I("euro")}</span><div class="lbl"><span>Unter Mindestlohn</span><small>Ab 18 stehen dir mindestens 13,90 € pro Stunde zu. Du bekommst ${esc(e2(j.wage || 0))}.</small></div></div>`);
   }
+  const ls = lohnSummary();
+  if (ls.s === "stop" || ls.s === "wait") blick.push(toolRow("lohn"));
+  const kp = kompassCalc(tstate("kompass")), k7 = kp.bald.filter(x => (x.next - td) / 864e5 <= 7);
+  if (k7.length) blick.push(`<button class="row" data-action="tool" data-id="kompass">${sq("calendar", "var(--orange)")}<span class="lbl"><span>Bald fällig: ${esc(e2(k7.reduce((a, x) => a + x.betrag, 0)))}</span><small class="one">${esc(k7.map(x => `${x.name || POSTEN[x.art]} am ${x.next.getDate()}.`).join(", "))}</small></span>${chev}</button>`);
   if (blick.length) h += `<div class="h2">Im Blick</div><div class="group ic">${blick.join("")}</div>`;
   const from = iso(addDays(td, -13));
   const recent = S.shifts.filter(s => s.date >= from && s.date <= t).sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start));
@@ -1902,11 +1921,11 @@ function jcDefaults(){ const p = S.profile; return {act:S.job.activity || "hande
 function sameObj(a, b){ return Object.keys(a).every(k => String(a[k]) === String(b[k])); }
 function renderCheck(){
   const mode = UI.jcMode || "anzeige";
-  const subs = {anzeige:"Passt diese Stelle zu mir?", job:"Darf ich diesen Job machen?", ausb:"Stimmt alles in meiner Ausbildung?"};
+  const subs = {anzeige:"Passt diese Stelle zu mir?", job:"Darf ich diesen Job machen?", ausb:"Stimmt alles in meiner Ausbildung?", rechte:"Urlaub, Krankheit, Kündigung, Vertrag"};
   let h = navbar("Job-Check");
   h += `<div class="content"><div class="lt"><h1>Job-Check</h1><div class="sub">${subs[mode]}</div></div>`;
-  h += `<div class="seg" style="margin-top:12px" role="group" aria-label="Was prüfen?">${[["anzeige","Anzeige"],["job","Nebenjob"],["ausb","Ausbildung"]].map(([v, l]) => `<button data-action="jc-mode" data-v="${v}" aria-pressed="${mode === v}">${l}</button>`).join("")}</div>`;
-  h += mode === "anzeige" ? checkAdHTML() : mode === "ausb" ? checkAusbHTML() : checkJobHTML();
+  h += `<div class="seg" style="margin-top:12px" role="group" aria-label="Was prüfen?">${[["anzeige","Anzeige"],["job","Nebenjob"],["ausb","Ausbildung"],["rechte","Rechte"]].map(([v, l]) => `<button data-action="jc-mode" data-v="${v}" aria-pressed="${mode === v}">${l}</button>`).join("")}</div>`;
+  h += mode === "anzeige" ? checkAdHTML() : mode === "ausb" ? checkAusbHTML() : mode === "rechte" ? checkRechteHTML() : checkJobHTML();
   h += `</div>`;
   setScreen("check", h);
 }
@@ -1955,6 +1974,561 @@ function acResultsHTML(cards){
     <div class="sechead">Deine Rechte</div><div class="group ic">${cards.map(c => `<button class="row" data-action="ac-detail" data-id="${c.id}">${sq(c.ic, c.col)}<span class="lbl"><span>${esc(c.title)}</span><small class="one">${esc(c.verdict)}</small></span><span class="stxt"><span class="dot ${c.s}"></span>${stLabel[c.s]}</span>${chev}</button>`).join("")}</div>`;
 }
 
+/* ===== Werkzeuge: Lohn-Check, Urlaub & Krank, Kündigung, Vertrag, Steuer, Förderung, Geld-Kompass =====
+   Alles läuft auf dem Gerät. Briefe werden nur kopiert oder in der Mail-App geöffnet, nie verschickt. */
+const ymAdd = (ym, n) => { const [y, m] = ym.split("-").map(Number); const d = new Date(y, m - 1 + n, 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; };
+const lastDayOf = ym => { const [y, m] = ym.split("-").map(Number); return new Date(y, m, 0); };
+function lastWorkday(ym){ let d = lastDayOf(ym); while (d.getDay() === 0 || d.getDay() === 6) d = addDays(d, -1); return d; }
+const addMonths = (d, n) => { const x = new Date(d.getFullYear(), d.getMonth() + n, d.getDate()); if (x.getDate() !== d.getDate()) x.setDate(0); return x; };
+function fullMonths(a, b){ let n = 0; while (n < 600 && addDays(addMonths(a, n + 1), -1) <= b) n++; return n; }
+const dFull = d => d.toLocaleDateString("de-DE", {day:"numeric", month:"long", year:"numeric"});
+const dNum = d => d.toLocaleDateString("de-DE", {day:"2-digit", month:"2-digit", year:"numeric"});
+const pName = () => S.profile.name || "[Dein Name]";
+const empName = () => S.job.title || "[Arbeitgeber]";
+const today0 = () => parse(todayISO());
+const toDate = v => /^\d{4}-\d{2}-\d{2}$/.test(String(v || "")) ? parse(v) : null;
+const nf2 = new Intl.NumberFormat("de-DE", {maximumFractionDigits:1});
+const TOOL_DEF = {
+  lohn:() => ({m:{}}),
+  urlaub:() => ({tage:0}),
+  kuend:() => ({art:"", wer:"ich", probe:-1, zugang:"", grund:"aufgeben", papier:true}),
+  vertrag:() => ({art:"", c:{}}),
+  steuer:() => ({jahr:+todayISO().slice(0, 4) - 1, brutto:"", lst:"", soli:"", kist:"", sv:null, pausch:false}),
+  foerder:() => ({wohnen:"eltern", weit:false, kind:false}),
+  kompass:() => ({ein:"", p:[]})
+};
+function tstate(id){
+  if (!S.tools || typeof S.tools !== "object") S.tools = {};
+  const d = TOOL_DEF[id]();
+  S.tools[id] = {...d, ...(S.tools[id] || {})};
+  return S.tools[id];
+}
+function setDeep(o, path, v){ const k = path.split("."); let x = o; k.slice(0, -1).forEach(p => { if (!x[p] || typeof x[p] !== "object") x[p] = {}; x = x[p]; }); x[k[k.length - 1]] = v; }
+function getDeep(o, path){ return path.split(".").reduce((x, p) => x == null ? undefined : x[p], o); }
+function jobSince(){
+  if (toDate(S.job.since)) return parse(S.job.since);
+  if (isAzubi(S.profile.status) && S.ausb.start) return new Date(+S.ausb.start, S.profile.status === "dual" ? 9 : 7, 1);
+  const first = S.shifts.filter(s => s.kind !== "schule").map(s => s.date).sort()[0];
+  return first ? parse(first) : null;
+}
+const jobUntil = () => toDate(S.job.until);
+const sinceISO = () => { const d = jobSince(); return d ? iso(d) : ""; };
+
+/* Bausteine für die Formulare */
+const tIn = (path, val, ph = "0", w = "5.5em", unit = "€") => `<input class="inl" style="width:${w}" inputmode="decimal" data-tf="${path}" data-tt="num" value="${val === "" || val == null ? "" : esc(String(val).replace(".", ","))}" placeholder="${ph}">${unit ? `<span class="unit">${unit}</span>` : ""}`;
+const tDate = (path, val, job = false) => `<input class="inl tdate" type="date" ${job ? `data-tjob="${path}"` : `data-tf="${path}"`} data-tt="date" value="${esc(val || "")}">`;
+const tSw = (path, on, label) => `<label class="switch"><input type="checkbox" data-tf="${path}" data-tt="bool" ${on ? "checked" : ""} aria-label="${esc(label)}"><span></span></label>`;
+const tSeg = (path, cur, opts, label) => `<div class="seg" role="group" aria-label="${esc(label)}">${opts.map(([v, l]) => `<button data-action="tset" data-tf="${path}" data-v="${v}" aria-pressed="${String(cur) === String(v)}">${esc(l)}</button>`).join("")}</div>`;
+const tStep = (path, val, unit = "") => `<span class="stepval">${esc(String(val))}${unit ? " " + unit : ""}</span><span class="stepper"><button type="button" data-action="tstep" data-tf="${path}" data-d="-1" aria-label="weniger">${I("minus")}</button><button type="button" data-action="tstep" data-tf="${path}" data-d="1" aria-label="mehr">${I("plus")}</button></span>`;
+const issueRow = (s, title, text) => `<div class="issue ${s}">${I(stIcon[s] || "info")}<span><b style="display:block;font-weight:600">${esc(title)}</b>${text}</span></div>`;
+function letterBlock(key, label){
+  const open = sheetCtx?.open === key;
+  return `<div style="margin-top:12px"><button class="btn soft" data-action="tletter" data-k="${key}">${I("pen")}${open ? "Brief ausblenden" : esc(label)}</button></div>` +
+    (open ? (() => { const L = TOOLS[sheetCtx.id].letter(tstate(sheetCtx.id), key); return `<div class="msgbox" style="margin-top:10px">${L.subject ? `<b>${esc(L.subject)}</b>\n\n` : ""}${esc(L.body)}</div>
+      <div class="btnrow" style="margin-top:10px"><button class="btn" data-action="tcopy" data-k="${key}">${I("copy")}Kopieren</button><a class="btn soft" href="mailto:?subject=${encodeURIComponent(L.subject || "")}&body=${encodeURIComponent(L.body)}">${I("doc")}In Mail-App</a></div>
+      <div class="secfoot">${esc(L.foot || "Passe den Text gern an. Er wird nicht verschickt, bis du es selbst tust.")}</div>`; })() : "");
+}
+const linkRow = (href, title, sub, ic = "ext", col = "var(--blue)") => `<a class="row" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${sq(ic === "ext" ? "doc" : ic, col)}<span class="lbl"><span>${esc(title)}</span><small>${esc(sub)}</small></span><span class="chev">${I("ext")}</span></a>`;
+const infoRow = (ic, col, title, sub) => `<div class="row">${sq(ic, col)}<span class="lbl"><span>${esc(title)}</span><small style="white-space:normal">${sub}</small></span></div>`;
+
+/* ---------- 1. Lohn-Check ---------- */
+function lohnMonths(){
+  const t = todayISO(), cur = t.slice(0, 7);
+  if (isVerg()) return [0, -1, -2].map(n => ymAdd(cur, n)).filter(ym => { const s = jobSince(); return !s || lastDayOf(ym) >= s; });
+  return [...new Set(S.shifts.filter(s => s.kind !== "schule" && s.date <= t).map(s => s.date.slice(0, 7)))].sort().reverse().slice(0, 3);
+}
+function lohnInfo(ym){
+  const st = tstate("lohn"), verg = isVerg(), t = today0();
+  const ms = S.shifts.filter(s => s.date.startsWith(ym) && s.kind !== "schule");
+  const mins = minsOf(ms), soll = verg ? (S.job.monthly || 0) : Math.round(earn(ms) * 100) / 100;
+  const due = verg ? lastWorkday(ym) : lastWorkday(ymAdd(ym, 1));
+  const e = st.m[ym] || {}, got = e.got === "" || e.got == null ? null : num(e.got);
+  const brutto = verg || S.job.type === "midijob";
+  let s, text, fehl = 0;
+  if (got == null){
+    if (t > due){ s = "stop"; text = `Kein Eingang eingetragen, fällig war der ${dNum(due)}`; fehl = soll; }
+    else { s = "info"; text = `Fällig spätestens am ${dNum(due)}`; }
+  } else {
+    fehl = Math.round((soll - got) * 100) / 100;
+    if (fehl <= 1){ s = "ok"; text = "Vollständig bezahlt"; fehl = 0; }
+    else if (!brutto && !e.abr && got >= soll * (1 - RULES.rvMinijob) - 1){ s = "wait"; text = `${e2(fehl)} weniger – vielleicht der Rentenbeitrag (3,6 %)`; }
+    else { s = "stop"; text = `Es fehlen ${e2(fehl)}`; }
+  }
+  return {ym, mins, soll, due, got, abr:!!e.abr, s, text, fehl, verg, brutto};
+}
+function lohnMin(){
+  const p = S.profile, j = S.job;
+  if (isVerg()){
+    if (S.ausb.art === "praxis") return {s:"info", title:"Vergütung im dualen Studium", text:"Für praxisintegrierte duale Studiengänge gibt es keine gesetzliche Mindestvergütung. Es gilt dein Vertrag."};
+    const mi = miavFor(S.ausb.start, S.ausb.jahr);
+    if (mi && (j.monthly || 0) < mi) return {s:"stop", title:"Unter der Mindestvergütung", text:`Du bekommst ${e0(j.monthly || 0)}. Im ${S.ausb.jahr}. Ausbildungsjahr stehen dir mindestens ${e0(mi)} zu (§ 17 BBiG), wenn kein Tarifvertrag gilt.`};
+    return {s:"ok", title:"Vergütung passt", text:mi ? `Mindestens ${e0(mi)} stehen dir zu – du bekommst ${e0(j.monthly || 0)}.` : "Deine Vergütung liegt im Rahmen."};
+  }
+  if (p.age < 18) return {s:"info", title:"Mindestlohn gilt für dich noch nicht", text:"Unter 18 ohne Berufsabschluss gibt es keinen gesetzlichen Mindestlohn (§ 22 Abs. 2 MiLoG). Es gilt, was vereinbart ist – und das muss pünktlich und vollständig kommen."};
+  if ((j.wage || 0) < RULES.mindestlohn) return {s:"stop", title:"Unter dem Mindestlohn", text:`Dein Stundenlohn: ${e2(j.wage || 0)}. Seit 1. Januar 2026 sind es mindestens ${e2(RULES.mindestlohn)} (§ 1 MiLoG). Dir fehlen ${e2(RULES.mindestlohn - (j.wage || 0))} pro Stunde.`};
+  return {s:"ok", title:"Mindestlohn eingehalten", text:`${e2(j.wage || 0)} pro Stunde – mindestens ${e2(RULES.mindestlohn)} sind Pflicht.`};
+}
+function lohnSummary(){
+  const months = lohnMonths().map(lohnInfo), m = lohnMin();
+  const s = [m.s, ...months.map(x => x.s)].reduce((a, b) => worst(a, b === "info" ? "ok" : b), "ok");
+  const bad = months.filter(x => x.s === "stop");
+  return {s, sub: m.s === "stop" ? m.title : bad.length ? `${monthLabel(bad[0].ym)}: ${bad[0].text}` : months.length ? "Lohn und Stunden passen zusammen" : "Noch keine Stunden erfasst"};
+}
+const LOHN = {
+  title:"Lohn-Check", ic:"euro", col:"var(--green)",
+  sub:() => lohnSummary().sub, status:() => lohnSummary().s,
+  form(st){
+    const months = lohnMonths(), verg = isVerg();
+    if (!months.length) return `<div class="secfoot" style="margin-top:8px">Trag zuerst deine Schichten unter „Stunden“ ein. Dann vergleicht Stundenklar sie mit dem Geld, das ankommt.</div>`;
+    let h = `<div class="secfoot" style="margin-top:8px;margin-bottom:4px">${verg ? "Trag ein, welche Vergütung laut Abrechnung (brutto) für den Monat kam." : "Trag ein, was laut Lohnabrechnung (brutto) kam. Ohne Abrechnung: was auf deinem Konto ankam."}</div>`;
+    months.forEach(ym => {
+      const x = lohnInfo(ym);
+      h += `<div class="sechead">${esc(monthLabel(ym))}</div><div class="group">
+        <div class="row"><span class="lbl"><span>${verg ? "Vergütung laut Vertrag" : `${esc(Hs(x.mins))} Std. × ${esc(e2(S.job.wage || 0))}`}</span><small id="lohn-s-${ym}">${this.pill(x)}</small></span><span class="val">${esc(e2(x.soll))}</span></div>
+        <div class="row"><span class="lbl">Bekommen</span>${tIn(`m.${ym}.got`, getDeep(st, `m.${ym}.got`), "0,00")}</div>
+        <div class="row"><span class="lbl"><span>Lohnabrechnung bekommen</span><small>Pflicht bei jeder Zahlung (§ 108 GewO)</small></span>${tSw(`m.${ym}.abr`, getDeep(st, `m.${ym}.abr`), "Lohnabrechnung bekommen")}</div>
+      </div>`;
+    });
+    return h;
+  },
+  pill:x => `<span class="stxt" style="white-space:normal"><span class="dot ${x.s}"></span>${esc(x.text)}</span>`,
+  update(){ lohnMonths().forEach(ym => { const el = document.getElementById("lohn-s-" + ym); if (el) el.innerHTML = this.pill(lohnInfo(ym)); }); },
+  res(st){
+    const m = lohnMin(), months = lohnMonths().map(lohnInfo), bad = months.filter(x => x.s === "stop" || x.s === "wait"), verg = isVerg();
+    let h = `<div class="sechead">Ergebnis</div><div class="group">${issueRow(m.s, m.title, esc(m.text))}`;
+    months.forEach(x => { if (x.s !== "info") h += issueRow(x.s, monthLabel(x.ym), esc(x.text) + (x.got != null && !x.abr ? " · Lohnabrechnung fehlt" : "")); });
+    h += `</div>`;
+    const target = months.find(x => x.s === "stop") || months.find(x => x.s === "wait");
+    if (target){
+      sheetCtx.lohnYm = target.ym;
+      h += `<div class="secfoot">Erst freundlich nachfragen. Wenn nichts passiert: Brief schicken${verg ? "" : ", Stundenzettel anhängen"}.</div>` + letterBlock("mahn", `Brief wegen ${monthLabel(target.ym)}`);
+    } else if (m.s === "stop") h += `<div class="secfoot">Sprich es erst freundlich an. Hilft das nicht, schick diesen Brief.</div>` + letterBlock("min", verg ? "Brief wegen der Mindestvergütung" : "Brief wegen des Mindestlohns");
+    if (!verg && months.length) h += `<div style="margin-top:10px"><button class="btn soft" data-action="zettel">${I("doc")}Stundenzettel ansehen</button></div>`;
+    h += `<div class="sechead">Gut zu wissen</div><div class="group ic">
+      ${infoRow("calendar", "var(--orange)", "Wann der Lohn fällig ist", verg ? "Die Vergütung für den laufenden Monat spätestens am letzten Arbeitstag des Monats (§ 18 Abs. 2 BBiG)." : "Der Mindestlohn spätestens am letzten Bankarbeitstag des Folgemonats (§ 2 MiLoG). Oft steht im Vertrag ein früherer Termin.")}
+      ${infoRow("warn", "var(--red)", "Fristen im Vertrag", "Viele Verträge verlangen, offenen Lohn innerhalb von 3 Monaten schriftlich zu fordern (Ausschlussfrist). Für den Mindestlohn gilt das nicht (§ 3 MiLoG). Sonst verjährt Lohn nach 3 Jahren.")}
+      ${infoRow("phone", "var(--green)", "Mindestlohn-Hotline: 030 60 28 00 28", "Mo–Do 8–20 Uhr, kostenlos und anonym. Sie leitet Hinweise an den Zoll weiter.")}
+      ${verg ? infoRow("person", "var(--indigo)", "Ausbildungsberatung der Kammer", "Kostenlos bei IHK oder Handwerkskammer – auch bei Streit um die Vergütung.") : ""}
+    </div><div class="secfoot">Werte für 2026. Feiertage sind bei den Fristen nicht eingerechnet. Allgemeine Info, keine Rechtsberatung.</div>`;
+    return h;
+  },
+  letter(st, key){
+    const m = lohnMin(), frist = dFull(addDays(today0(), 14));
+    if (key === "min"){
+      if (isVerg()){
+        const mi = miavFor(S.ausb.start, S.ausb.jahr), diff = mi - (S.job.monthly || 0);
+        return {subject:"Meine Ausbildungsvergütung", body:`Guten Tag,\n\nmeine Ausbildungsvergütung beträgt ${e2(S.job.monthly || 0)} im Monat. Für Ausbildungen, die ${S.ausb.start} begonnen haben, liegt die gesetzliche Mindestvergütung im ${S.ausb.jahr}. Ausbildungsjahr bei ${e2(mi)} (§ 17 Berufsbildungsgesetz). Mir fehlen also ${e2(diff)} pro Monat.\n\nBitte zahlen Sie mir ab sofort mindestens die Mindestvergütung und die Differenz für die vergangenen Monate nach. Falls für meinen Betrieb ein Tarifvertrag gilt, nennen Sie mir bitte, welcher.\n\nBitte geben Sie mir bis zum ${frist} Bescheid.\n\nVielen Dank und freundliche Grüße\n${pName()}`, foot:"Die Ausbildungsberatung deiner Kammer hilft kostenlos, wenn sich nichts tut."};
+      }
+      const from = iso(addDays(today0(), -91)), mins = minsOf(S.shifts.filter(s => s.date >= from && s.date <= todayISO() && s.kind !== "schule")), diff = (RULES.mindestlohn - (S.job.wage || 0)) * mins / 60;
+      return {subject:"Mindestlohn", body:`Guten Tag,\n\nich bekomme ${e2(S.job.wage || 0)} pro Stunde. Seit 1. Januar 2026 beträgt der gesetzliche Mindestlohn ${e2(RULES.mindestlohn)} pro Stunde (§ 1 Mindestlohngesetz).\n\nBitte zahlen Sie mir ab sofort mindestens den Mindestlohn und die Differenz für meine bisherigen Stunden nach. Für die ${Hs(mins)} Stunden der letzten drei Monate sind das ${e2(diff)}.\n\nBitte geben Sie mir bis zum ${frist} Bescheid.\n\nVielen Dank und freundliche Grüße\n${pName()}`, foot:"Tut sich nichts: Die Mindestlohn-Hotline (030 60 28 00 28) hilft und leitet Hinweise an den Zoll weiter."};
+    }
+    const x = lohnInfo(sheetCtx?.lohnYm || lohnMonths()[0]);
+    const lines = [`Guten Tag,`, ""];
+    if (x.verg) lines.push(`meine Ausbildungsvergütung für ${monthLabel(x.ym)} beträgt laut Vertrag ${e2(x.soll)}. Sie war spätestens am ${dFull(x.due)} fällig (§ 18 Abs. 2 BBiG).`);
+    else lines.push(`für ${monthLabel(x.ym)} habe ich laut meinem Stundenzettel ${Hs(x.mins)} Stunden gearbeitet. Bei ${e2(S.job.wage || 0)} pro Stunde sind das ${e2(x.soll)}.`);
+    if (x.got == null) lines.push("Bisher ist dafür kein Geld bei mir angekommen.");
+    else if (x.fehl > 0) lines.push(`Bekommen habe ich ${e2(x.got)}. Es fehlen also ${e2(x.fehl)}.`);
+    if (m.s === "stop" && !x.verg) lines.push("", `Seit 1. Januar 2026 beträgt der gesetzliche Mindestlohn ${e2(RULES.mindestlohn)} pro Stunde (§ 1 Mindestlohngesetz). Bitte zahlen Sie mir die Differenz für alle Stunden nach.`);
+    if (m.s === "stop" && x.verg) lines.push("", `Außerdem liegt meine Vergütung unter der gesetzlichen Mindestvergütung (§ 17 BBiG). Bitte prüfen Sie das.`);
+    lines.push("", `Bitte überweisen Sie den offenen Betrag bis zum ${frist}${x.abr ? "" : " und schicken Sie mir eine Lohnabrechnung (§ 108 Gewerbeordnung)"}.${x.verg ? "" : " Meinen Stundenzettel schicke ich mit."}`, "", "Vielen Dank und freundliche Grüße", pName());
+    return {subject:`${x.verg ? "Ausbildungsvergütung" : "Lohn"} für ${monthLabel(x.ym)}`, body:lines.join("\n"), foot:"Schick den Brief per Mail oder ausgedruckt. Bewahr eine Kopie und deinen Stundenzettel auf."};
+  }
+};
+
+/* ---------- 2. Urlaub und Krankheit ---------- */
+function urlaubTage(st){
+  if (st.tage) return st.tage;
+  const t = today0(), from = iso(addDays(t, -55)), to = todayISO();
+  const days = new Set(S.shifts.filter(s => s.date >= from && s.date <= to).map(s => s.date)), weeks = new Set([...days].map(d => weekKey(parse(d))));
+  return days.size ? Math.min(6, Math.max(1, Math.round(days.size / weeks.size))) : (isAzubi(S.profile.status) ? 5 : 2);
+}
+function urlaubCalc(st){
+  const age = S.profile.age, tage = urlaubTage(st);
+  const wt = age < 16 ? 30 : age < 17 ? 27 : age < 18 ? 25 : 24, law = age < 18 ? "§ 19 JArbSchG" : "§ 3 BUrlG";
+  const roh = wt * tage / 6, jahr = roh % 1 >= 0.5 ? Math.ceil(roh) : Math.round(roh * 10) / 10;
+  const vertrag = isAzubi(S.profile.status) ? (S.ausb.urlaub || 0) : 0;
+  const t = today0(), y = t.getFullYear(), jan1 = new Date(y, 0, 1), dec31 = new Date(y, 11, 31), jun30 = new Date(y, 5, 30);
+  const a = jobSince(), b = jobUntil();
+  let teil = null, fall = "";
+  if (a){
+    const sechs = addDays(addMonths(a, 6), -1);
+    if (b && b < sechs){ const mo = fullMonths(a, b); teil = mo / 12 * jahr; fall = `Dein Job dauert weniger als 6 Monate. Pro vollem Monat gibt es 1/12 des Jahresurlaubs (§ 5 Abs. 1 b BUrlG): ${mo} ${mo === 1 ? "Monat" : "Monate"}.`; }
+    else if (a > jun30 && a <= dec31){ const mo = fullMonths(a, b && b < dec31 ? b : dec31); teil = mo / 12 * jahr; fall = `Du hast in der zweiten Jahreshälfte angefangen. Für ${y} gibt es 1/12 pro vollem Monat (§ 5 Abs. 1 a BUrlG): ${mo} ${mo === 1 ? "Monat" : "Monate"}.`; }
+    else if (b && b <= jun30 && b >= jan1){ const mo = fullMonths(a > jan1 ? a : jan1, b); teil = mo / 12 * jahr; fall = `Dein Job endet in der ersten Jahreshälfte. Für ${y} gibt es 1/12 pro vollem Monat (§ 5 Abs. 1 c BUrlG): ${mo} ${mo === 1 ? "Monat" : "Monate"}.`; }
+  }
+  if (teil != null) teil = teil % 1 >= 0.5 ? Math.ceil(teil) : Math.round(teil * 10) / 10;
+  const from = iso(addDays(t, -91)), last = S.shifts.filter(s => s.date >= from && s.date <= todayISO() && s.kind !== "schule");
+  const wd = new Set(last.map(s => s.date)).size;
+  const proTag = isVerg() ? (S.job.monthly || 0) * 3 / (13 * tage) : wd ? earn(last) / wd : 0;
+  const krankAb = a ? addDays(a, 28) : null;
+  return {age, tage, wt, law, jahr, vertrag, teil, fall, proTag, krankAb, a, b};
+}
+const URLAUB = {
+  title:"Urlaub & Krankheit", ic:"sun", col:"var(--yellow)",
+  sub:() => { const c = urlaubCalc(tstate("urlaub")); return `Mindestens ${nf2.format(c.teil != null ? c.teil : c.jahr)} bezahlte Urlaubstage${c.teil != null ? " für diesen Job" : " im Jahr"}`; },
+  status:() => "info",
+  form(st){
+    const c = urlaubCalc(st);
+    return `<div class="group" style="margin-top:8px">
+      <div class="row"><span class="lbl">Beschäftigt seit</span>${tDate("since", S.job.since || sinceISO(), true)}</div>
+      <div class="row"><span class="lbl"><span>Befristet bis</span><small>leer lassen, wenn offen</small></span>${tDate("until", S.job.until || "", true)}</div>
+      <div class="row"><span class="lbl"><span>Arbeitstage pro Woche</span><small>${st.tage ? "selbst eingestellt" : "aus deinen Schichten geschätzt"}</small></span>${tStep("tage", c.tage)}</div>
+      <div class="row"><span class="lbl">Alter</span><span class="val">${esc(String(c.age))} Jahre</span></div>
+    </div>`;
+  },
+  res(st){
+    const c = urlaubCalc(st), t = today0();
+    let h = `<div class="card stack" style="margin-top:18px;gap:4px"><span class="stxt">Dein gesetzlicher Urlaub</span>
+      <div class="big">${esc(nf2.format(c.teil != null ? c.teil : c.jahr))}<small> ${c.teil != null ? "Tage für diesen Job" : "Arbeitstage im Jahr"}</small></div>
+      <span style="color:var(--label2);font-size:15px;line-height:1.4">${c.teil != null ? `Voller Jahresurlaub wären ${esc(nf2.format(c.jahr))} Tage. ` : ""}Gerechnet: ${c.wt} Werktage (${esc(c.law)}) × ${c.tage} ÷ 6 Tage. Das gilt auch für Minijobs und Ferienjobs.</span></div>`;
+    const rows = [];
+    if (c.fall) rows.push(issueRow("info", "Anteiliger Urlaub", esc(c.fall)));
+    if (c.vertrag && c.vertrag > (c.teil ?? c.jahr)) rows.push(issueRow("ok", "Dein Vertrag gibt mehr", `${c.vertrag} Tage laut Vertrag – dann gilt der Vertrag.`));
+    if (c.b && c.teil != null && c.teil > 0) rows.push(issueRow("info", "Am Ende nicht genommen?", "Dann muss der Arbeitgeber die Tage auszahlen (Urlaubsabgeltung, § 7 Abs. 4 BUrlG)."));
+    if (c.proTag > 0) rows.push(issueRow("info", `Pro Urlaubstag etwa ${e2(c.proTag)}`, "Urlaub wird bezahlt wie ein normaler Arbeitstag: Durchschnitt der letzten 13 Wochen (§ 11 BUrlG)."));
+    rows.push(issueRow("wait", "Urlaub ist zum Erholen da", "Statt Urlaub einfach Geld zu bekommen, geht nur am Ende des Jobs. Urlaub verfällt meist erst, wenn der Arbeitgeber dich rechtzeitig darauf hingewiesen hat."));
+    h += `<div class="sechead">Urlaub</div><div class="group">${rows.join("")}</div>` + letterBlock("urlaub", "Urlaub schriftlich anfragen");
+    const warte = c.krankAb && c.krankAb > t;
+    h += `<div class="sechead">Wenn du krank bist</div><div class="group">
+      ${issueRow("info", "1. Sofort Bescheid geben", "Vor Schichtbeginn, per Anruf oder Nachricht (§ 5 EFZG). Die Krankheit musst du nicht nennen.")}
+      ${issueRow("info", "2. Krankschreibung", "Spätestens ab dem 4. Krankheitstag, wenn der Arbeitgeber es nicht früher verlangt. Die Praxis meldet sie elektronisch an deine Krankenkasse – auch beim Minijob.")}
+      ${issueRow(warte ? "wait" : "ok", "3. Lohn läuft weiter – bis zu 6 Wochen", warte ? `Erst ab ${esc(dNum(c.krankAb))}: Der Anspruch beginnt, wenn dein Job 4 Wochen besteht (§ 3 Abs. 3 EFZG).` : "Du bekommst, was du in der Zeit verdient hättest (§§ 3, 4 EFZG). Das gilt auch für Minijobs und Ferienjobs.")}
+    </div>` + letterBlock("krank", "Krankmeldung schreiben");
+    h += `<div class="secfoot">Krankheitstage speichert Stundenklar nicht. Allgemeine Info, keine Rechtsberatung.</div>`;
+    return h;
+  },
+  letter(st, key){
+    const c = urlaubCalc(st);
+    if (key === "krank") return {subject:"Krankmeldung", body:`Hallo,\n\nich bin leider krank und kann heute nicht zur Arbeit kommen. Voraussichtlich bin ich bis [Datum] krank. Sobald ich beim Arzt war, sage ich Bescheid.\n\nViele Grüße\n${pName()}`, foot:"Die Krankheit selbst musst du nicht nennen. Schick die Nachricht vor Schichtbeginn."};
+    const d = c.teil != null ? c.teil : c.jahr;
+    return {subject:"Mein Urlaubsanspruch", body:`Guten Tag,\n\nich arbeite seit ${c.a ? dFull(c.a) : "[Datum]"} bei Ihnen, an ${c.tage} ${c.tage === 1 ? "Tag" : "Tagen"} pro Woche. Nach dem ${c.age < 18 ? "Jugendarbeitsschutzgesetz (§ 19)" : "Bundesurlaubsgesetz (§ 3)"} stehen mir ${nf2.format(d)} bezahlte Urlaubstage${c.teil != null ? "" : " im Jahr"} zu. Das gilt auch für Minijobs.\n\nIch möchte gern vom [Datum] bis zum [Datum] Urlaub nehmen. Bitte bestätigen Sie mir das kurz.\n\nFreundliche Grüße\n${pName()}`};
+  }
+};
+
+/* ---------- 6. Probezeit und Kündigung ---------- */
+function frist4w(z){ const min = addDays(z, 28); const d15 = new Date(min.getFullYear(), min.getMonth(), 15), dEnd = new Date(min.getFullYear(), min.getMonth() + 1, 0); return min <= d15 ? d15 : dEnd; }
+function monthsToEnd(z, n){ const x = addMonths(z, n); return new Date(x.getFullYear(), x.getMonth() + 1, 0); }
+function kuendCalc(st){
+  const art = st.art || (isAzubi(S.profile.status) ? "ausb" : "job");
+  const probe = st.probe >= 0 ? st.probe : (art === "ausb" ? 4 : 0);
+  const z = toDate(st.zugang) || today0(), a = jobSince();
+  const probeEnd = a && probe ? addDays(addMonths(a, probe), -1) : null;
+  const inProbe = !!(probeEnd && z <= probeEnd);
+  const years = a ? (z - a) / (365.25 * 864e5) : 0;
+  let end = null, frist = "", regeln = [], s = "info", form = "Schriftlich auf Papier mit Unterschrift. WhatsApp, Mail oder mündlich zählen nicht (§ 623 BGB" + (art === "ausb" ? ", § 22 Abs. 3 BBiG)." : ").");
+  if (art === "ausb"){
+    if (inProbe){ end = z; frist = "In der Probezeit: jederzeit, ohne Frist und ohne Grund (§ 22 Abs. 1 BBiG)."; }
+    else if (st.wer === "ich"){ end = addDays(z, 28); frist = "Nach der Probezeit: 4 Wochen Frist – aber nur, wenn du die Ausbildung aufgibst oder einen anderen Beruf lernen willst. Der Grund muss im Brief stehen (§ 22 Abs. 2 Nr. 2 BBiG)."; regeln.push(["wait", "Nur den Betrieb wechseln?", "Im selben Beruf geht das nicht per Kündigung. Dafür braucht es einen Aufhebungsvertrag mit dem Betrieb."]); }
+    else { frist = "Nach der Probezeit darf der Betrieb nur aus einem wichtigen Grund kündigen – fristlos, schriftlich, mit Begründung und innerhalb von 2 Wochen, nachdem er davon wusste (§ 22 Abs. 2 Nr. 1, Abs. 4 BBiG)."; s = "stop"; regeln.push(["stop", "Sofort beraten lassen", "Bei der Kammer gibt es oft einen Schlichtungsausschuss, der vor einer Klage angerufen werden muss. Hilfe: Ausbildungsberatung der Kammer, Gewerkschaftsjugend."]); }
+    if (S.profile.age < 18) regeln.push(["info", "Unter 18", st.wer === "ich" ? "Deine Eltern müssen die Kündigung mit unterschreiben." : "Die Kündigung muss an deine Eltern gehen, sonst ist sie nicht wirksam zugegangen."]);
+  } else {
+    if (inProbe){ end = addDays(z, 14); frist = "In der Probezeit: 2 Wochen Frist, zu jedem Tag (§ 622 Abs. 3 BGB)."; }
+    else if (st.wer === "chef" && years >= 2){ const n = years >= 20 ? 7 : years >= 15 ? 6 : years >= 12 ? 5 : years >= 10 ? 4 : years >= 8 ? 3 : years >= 5 ? 2 : 1; end = monthsToEnd(z, n); frist = `Nach ${Math.floor(years)} Jahren muss der Arbeitgeber ${n} ${n === 1 ? "Monat" : "Monate"} zum Monatsende einhalten (§ 622 Abs. 2 BGB).`; }
+    else { end = frist4w(z); frist = "4 Wochen zum 15. oder zum Monatsende (§ 622 Abs. 1 BGB). Im Vertrag kann eine längere Frist stehen."; }
+    if (jobUntil() && end && end >= jobUntil()){ end = jobUntil(); frist = "Dein befristeter Job endet vorher von selbst – kündigen musst du nicht."; }
+    if (jobUntil()) regeln.unshift(["wait", "Befristeter Job", `Er endet von selbst am ${dNum(jobUntil())}. Vorher kündigen geht nur, wenn es im Vertrag ausdrücklich vereinbart ist (§ 15 Abs. 4 TzBfG).`]);
+    if (st.wer === "chef"){ regeln.push(["wait", "3 Wochen Zeit zum Handeln", "Hältst du die Kündigung für falsch, musst du innerhalb von 3 Wochen nach Zugang beim Arbeitsgericht klagen (§ 4 KSchG). Lass dich vorher beraten."]); s = "wait"; }
+    if (S.profile.age < 18) regeln.push(["info", "Unter 18", "Haben deine Eltern den Job erlaubt, darfst du ihn meist auch selbst kündigen (§ 113 BGB)."]);
+  }
+  if (st.wer === "chef" && !st.papier){ s = "stop"; regeln.unshift(["stop", "So ist die Kündigung unwirksam", "Eine Kündigung per WhatsApp, Mail oder mündlich zählt nicht (§ 623 BGB). Dein Job läuft weiter – reagier trotzdem und lass dich beraten."]); }
+  const vers = art === "ausb" || S.job.type === "midijob";
+  if (vers && st.wer === "chef") regeln.push(["wait", "Arbeitsuchend melden", "Spätestens 3 Tage, nachdem du vom Ende weißt, bei der Agentur für Arbeit (§ 38 SGB III). Sonst droht eine Sperrzeit beim Arbeitslosengeld."]);
+  regeln.push(["info", "Zeugnis", art === "ausb" ? "Am Ende bekommst du ein Zeugnis. Auf Wunsch mit Bewertung deiner Leistung (§ 16 BBiG)." : "Du hast immer Anspruch auf ein Arbeitszeugnis, auf Wunsch mit Bewertung (§ 109 GewO)."]);
+  return {art, probe, z, a, probeEnd, inProbe, end, frist, regeln, s, form};
+}
+const KUEND = {
+  title:"Probezeit & Kündigung", ic:"doc", col:"var(--red)",
+  sub:() => { const c = kuendCalc(tstate("kuend")); return c.probeEnd ? (c.probeEnd >= today0() ? `Probezeit bis ${dNum(c.probeEnd)}` : `Probezeit vorbei seit ${dNum(addDays(c.probeEnd, 1))}`) : "Fristen ausrechnen, Briefe schreiben"; },
+  status:() => "info",
+  form(st){
+    const c = kuendCalc(st);
+    return `<div style="display:grid;gap:10px;margin-top:8px">${tSeg("art", c.art, [["job", "Job"], ["ausb", "Ausbildung"]], "Art")}${tSeg("wer", st.wer, [["ich", "Ich kündige"], ["chef", "Mir wurde gekündigt"]], "Wer kündigt")}</div>
+      <div class="group" style="margin-top:12px">
+        <div class="row"><span class="lbl">Angefangen am</span>${tDate("since", S.job.since || sinceISO(), true)}</div>
+        <div class="row"><span class="lbl"><span>Probezeit laut Vertrag</span><small>${c.art === "ausb" ? "1 bis 4 Monate" : "0 = keine, höchstens 6"}</small></span>${tStep("probe", c.probe, "Mon.")}</div>
+        <div class="row"><span class="lbl"><span>Kündigung geht zu am</span><small>leer = heute</small></span>${tDate("zugang", st.zugang || "")}</div>
+        ${st.wer === "chef" ? `<div class="row"><span class="lbl"><span>Auf Papier mit Unterschrift</span><small>nicht per WhatsApp oder Mail</small></span>${tSw("papier", st.papier !== false, "Auf Papier mit Unterschrift")}</div>` : ""}
+      </div>
+      ${c.art === "ausb" && st.wer === "ich" && !c.inProbe ? `<div style="margin-top:12px">${tSeg("grund", st.grund, [["aufgeben", "Ausbildung aufgeben"], ["anderer", "Anderen Beruf lernen"]], "Grund")}</div>` : ""}`;
+  },
+  res(st){
+    const c = kuendCalc(st), t = today0();
+    let h = `<div class="card stack" style="margin-top:18px;gap:6px">
+      ${c.probeEnd ? `<span class="stxt"><span class="dot ${c.inProbe ? "wait" : "ok"}"></span>${c.inProbe ? "Noch in der Probezeit" : "Probezeit vorbei"} · endet${c.probeEnd < t ? "e" : ""} am ${esc(dNum(c.probeEnd))}</span>` : `<span class="stxt">Keine Probezeit${c.a ? "" : " · Beginn eintragen"}</span>`}
+      ${c.end ? `<div class="big" style="font-size:30px">${esc(dNum(c.end))}<small> ${st.wer === "ich" ? "frühestes Ende" : "Ende frühestens"}</small></div>` : `<div style="font:600 20px/1.3 var(--font)">Nur fristlos aus wichtigem Grund</div>`}
+      <span style="color:var(--label2);font-size:15px;line-height:1.4">${esc(c.frist)}</span></div>`;
+    h += `<div class="sechead">Das musst du wissen</div><div class="group">${issueRow("info", "Form", esc(c.form))}${c.regeln.map(([s, a, b]) => issueRow(s, a, esc(b))).join("")}</div>`;
+    if (st.wer === "ich"){
+      if (c.art === "ausb") h += `<div class="note i" style="margin-top:12px">${I("info")}<span>Bevor du unterschreibst: Die Ausbildungsberatung der Kammer und die Berufsberatung der Agentur für Arbeit helfen kostenlos – auch beim Wechsel.</span></div>`;
+      if (c.end) h += letterBlock("kuend", "Kündigung schreiben");
+    }
+    h += letterBlock("zeugnis", "Zeugnis anfordern");
+    h += `<div class="secfoot">Feiertage und Verträge mit anderen Fristen sind nicht eingerechnet. Allgemeine Info, keine Rechtsberatung.</div>`;
+    return h;
+  },
+  letter(st, key){
+    const c = kuendCalc(st), ort = S.profile.ort || "[Ort]", heute = dFull(today0());
+    const head = `${pName()}\n[Deine Adresse]\n\n${empName()}\n[Adresse des Arbeitgebers]\n\n${ort}, ${heute}\n\n`;
+    if (key === "zeugnis") return {subject:"Bitte um ein qualifiziertes Zeugnis", body:`Guten Tag,\n\n${c.art === "ausb" ? "zum Ende meiner Ausbildung" : "zum Ende meines Arbeitsverhältnisses"} bitte ich Sie um ein qualifiziertes Zeugnis, das auch meine Leistung und mein Verhalten bewertet (${c.art === "ausb" ? "§ 16 BBiG" : "§ 109 GewO"}).\n\nVielen Dank und freundliche Grüße\n${pName()}`};
+    const ausb = c.art === "ausb", minor = S.profile.age < 18;
+    let text = ausb
+      ? (c.inProbe ? `hiermit kündige ich mein Ausbildungsverhältnis in der Probezeit zum ${dFull(c.end)}.` : `hiermit kündige ich mein Ausbildungsverhältnis mit einer Frist von vier Wochen zum ${dFull(c.end)}. Grund: ${st.grund === "anderer" ? "Ich möchte mich für eine andere Berufstätigkeit ausbilden lassen" : "Ich gebe die Berufsausbildung auf"} (§ 22 Abs. 2 Nr. 2 BBiG).`)
+      : `hiermit kündige ich mein Arbeitsverhältnis fristgerecht zum ${dFull(c.end)}, hilfsweise zum nächstmöglichen Termin.`;
+    return {subject:`Kündigung meines ${ausb ? "Ausbildungsverhältnisses" : "Arbeitsverhältnisses"}`,
+      body:`${head}Kündigung meines ${ausb ? "Ausbildungsverhältnisses" : "Arbeitsverhältnisses"}\n\nSehr geehrte Damen und Herren,\n\n${text}\n\nBitte bestätigen Sie mir den Erhalt dieser Kündigung schriftlich. Außerdem bitte ich um ein qualifiziertes Zeugnis.\n\nMit freundlichen Grüßen\n\n\n______________________\n${pName()}${minor ? "\n\n\n______________________\nUnterschrift der Eltern" : ""}`,
+      foot:"Ausdrucken, unterschreiben und persönlich übergeben (Empfang bestätigen lassen) oder per Einschreiben schicken. Per Mail ist eine Kündigung nicht gültig."};
+  }
+};
+
+/* ---------- 7. Vertrags-Check ---------- */
+const NACHW = [
+  ["name", "Name und Anschrift von dir und dem Arbeitgeber", 1], ["lohn", "Lohn: Höhe, Zuschläge, Zahltag und Art der Auszahlung", 1], ["zeit", "Arbeitszeit, Pausen und ggf. Schichtsystem", 1],
+  ["beginn", "Beginn des Jobs", 7], ["ende", "Bei Befristung: das Enddatum", 7], ["ort", "Arbeitsort", 7], ["taet", "Was du machen sollst", 7], ["probe", "Dauer der Probezeit, falls vereinbart", 7],
+  ["abruf", "Regeln zur Arbeit auf Abruf, falls es die gibt", 7], ["ueber", "Regeln zu Überstunden", 7],
+  ["urlaub", "Urlaubstage", 30], ["kuend", "Kündigung: Schriftform, Fristen und Klagefrist", 30], ["tarif", "Hinweis auf Tarifverträge oder Betriebsvereinbarungen", 30], ["fortb", "Fortbildungen, falls der Arbeitgeber welche anbietet", 30], ["rente", "Betriebliche Altersversorgung, falls es eine gibt", 30]
+];
+const BBIG11 = [
+  ["ziel", "Art, Ziel und Ablauf der Ausbildung (Ausbildungsplan)"], ["beginn", "Beginn und Dauer der Ausbildung"], ["ausser", "Ausbildung außerhalb des Betriebs, falls es welche gibt"], ["zeit", "Tägliche Ausbildungszeit"],
+  ["probe", "Dauer der Probezeit (1 bis 4 Monate)"], ["verg", "Höhe und Zahltag der Vergütung, auch für Überstunden"], ["urlaub", "Urlaubstage"], ["kuend", "Wann gekündigt werden kann"],
+  ["tarif", "Hinweis auf Tarifverträge oder Betriebsvereinbarungen"], ["nachweis", "Form des Ausbildungsnachweises (Berichtsheft)"]
+];
+const vertragArt = st => st.art || (isAzubi(S.profile.status) ? "ausb" : "job");
+function vertragCalc(st){
+  const art = vertragArt(st), list = art === "ausb" ? BBIG11 : NACHW, c = (st.c || {})[art] || {};
+  const ok = list.filter(x => c[x[0]]), miss = list.filter(x => !c[x[0]]);
+  return {art, list, c, ok, miss, s: !ok.length ? "info" : miss.length ? (miss.some(x => x[2] === 1 || art === "ausb") ? "stop" : "wait") : "ok"};
+}
+const VERTRAG = {
+  title:"Vertrags-Check", ic:"note", col:"var(--indigo)",
+  sub:() => { const c = vertragCalc(tstate("vertrag")); return c.ok.length ? `${c.ok.length} von ${c.list.length} Punkten stehen drin` : "Steht alles Wichtige im Vertrag?"; },
+  status:() => vertragCalc(tstate("vertrag")).s,
+  form(st){
+    const c = vertragCalc(st), tag = d => d === 1 ? "ab Tag 1" : d === 7 ? "bis Tag 7" : "bis 1 Monat";
+    return `<div style="margin-top:8px">${tSeg("art", c.art, [["job", "Job oder Minijob"], ["ausb", "Ausbildung"]], "Vertragsart")}</div>
+      <div class="secfoot" style="margin-top:10px">Nimm deinen Vertrag zur Hand und hak ab, was drinsteht. Ein Foto brauchst du nicht.</div>
+      <div class="group">${c.list.map(([id, label, d]) => `<button class="row tick-row" data-action="ttoggle" data-tf="c.${c.art}.${id}" aria-pressed="${!!c.c[id]}"><span class="tick" aria-hidden="true">${c.c[id] ? I("ok") : ""}</span><span class="lbl"><span style="white-space:normal">${esc(label)}</span>${d ? `<small>${tag(d)}</small>` : ""}</span></button>`).join("")}</div>`;
+  },
+  res(st){
+    const c = vertragCalc(st);
+    let h = `<div class="sechead">Ergebnis</div><div class="group">`;
+    if (!c.ok.length) h += issueRow("info", "Noch nichts abgehakt", c.art === "ausb" ? "Der Ausbildungsvertrag muss vor Beginn bei dir sein und alle Punkte enthalten (§ 11 BBiG)." : "Seit August 2022 muss jeder Arbeitgeber die wichtigsten Bedingungen schriftlich festhalten – auch bei Minijobs und Ferienjobs (§ 2 NachwG).");
+    else if (!c.miss.length) h += issueRow("ok", "Alles drin", "Dein Vertrag enthält alle Pflichtangaben.");
+    else h += issueRow(c.s, `${c.miss.length} ${c.miss.length === 1 ? "Angabe fehlt" : "Angaben fehlen"}`, esc(c.miss.map(x => x[1]).join(" · ")));
+    h += `</div>`;
+    if (c.ok.length && c.miss.length) h += letterBlock("vertrag", "Fehlende Angaben anfordern");
+    h += `<div class="sechead">Gut zu wissen</div><div class="group ic">${c.art === "ausb"
+      ? `${infoRow("calendar", "var(--orange)", "Vor dem ersten Tag", "Der Betrieb muss dir den Vertrag vor Ausbildungsbeginn geben und ihn bei der Kammer eintragen lassen.")}${infoRow("person", "var(--indigo)", "Unter 18", "Deine Eltern unterschreiben den Ausbildungsvertrag mit.")}`
+      : `${infoRow("calendar", "var(--orange)", "Fristen", "Lohn, Arbeitszeit und Namen ab dem ersten Arbeitstag, das meiste bis zum 7. Tag, der Rest innerhalb eines Monats (§ 2 Abs. 1 NachwG).")}${infoRow("doc", "var(--blue)", "Papier oder Mail", "Der Nachweis darf auch per Mail kommen. Du kannst ihn aber jederzeit auf Papier verlangen.")}${infoRow("warn", "var(--red)", "Bußgeld", "Wer den Nachweis nicht gibt, riskiert bis zu 2.000 € Bußgeld (§ 4 NachwG). Dein Job gilt trotzdem.")}`}</div>
+      <div class="secfoot">Stundenklar speichert nur deine Häkchen. Allgemeine Info, keine Rechtsberatung.</div>`;
+    return h;
+  },
+  letter(st){
+    const c = vertragCalc(st);
+    return {subject:c.art === "ausb" ? "Fehlende Angaben im Ausbildungsvertrag" : "Schriftlicher Nachweis meiner Arbeitsbedingungen",
+      body:`Guten Tag,\n\n${c.art === "ausb" ? "in meinem Ausbildungsvertrag fehlen noch folgende Angaben, die nach § 11 BBiG hineingehören:" : "bitte schicken Sie mir einen schriftlichen Nachweis meiner Arbeitsbedingungen nach § 2 Nachweisgesetz. Bisher fehlen mir diese Angaben:"}\n\n${c.miss.map(x => "– " + x[1]).join("\n")}\n\nVielen Dank und freundliche Grüße\n${pName()}`};
+  }
+};
+
+/* ---------- 8. Steuer zurück ---------- */
+const GFB = {2021:9744, 2022:10347, 2023:10908, 2024:11784, 2025:12096, 2026:12348};
+const ANP = y => y <= 2022 ? 1200 : 1230;
+function steuerCalc(st){
+  const y = +st.jahr, sv = st.sv == null ? !["minijob", "ferienjob"].includes(S.job.type) : st.sv;
+  const brutto = num(st.brutto), steuer = num(st.lst) + num(st.soli) + num(st.kist);
+  const vorsorge = sv ? Math.round(brutto * 0.2) : 0, zve = Math.max(0, brutto - ANP(y) - 36 - vorsorge), gfb = GFB[y] || RULES.grundfreibetrag;
+  const fristJahr = y + 4, fristBald = fristJahr === +todayISO().slice(0, 4);
+  let s, title, text;
+  if (st.pausch){ s = "info"; title = "Hier gibt es nichts zurück"; text = "Bei pauschal versteuerten Minijobs zahlt der Arbeitgeber die Steuer. Eine Erklärung bringt dir nichts."; }
+  else if (!brutto){ s = "info"; title = "Zahlen eintragen"; text = "Du findest sie auf deiner Lohnsteuerbescheinigung (vom Arbeitgeber, meist im Februar)."; }
+  else if (!steuer){ s = "info"; title = "Es wurde keine Steuer abgezogen"; text = "Dann gibt es nichts zurückzuholen."; }
+  else if (zve <= gfb){ s = "ok"; title = `Lohnt sich: etwa ${e0(steuer)} zurück`; text = `Dein geschätztes Einkommen liegt unter dem Grundfreibetrag von ${e0(gfb)}. Dann bekommst du die abgezogene Steuer meist komplett zurück.`; }
+  else if (zve <= gfb * 1.3){ s = "wait"; title = "Lohnt sich wahrscheinlich teilweise"; text = "Du liegst knapp über dem Grundfreibetrag. Mit Fahrtkosten und Arbeitsmitteln kann trotzdem einiges zurückkommen."; }
+  else { s = "info"; title = "Vielleicht etwas"; text = "Du liegst deutlich über dem Grundfreibetrag. Lohnen kann es sich mit Fahrtkosten, Arbeitsmitteln oder Umzugskosten – ELSTER rechnet es genau aus."; }
+  return {y, sv, brutto, steuer, vorsorge, zve, gfb, s, title, text, fristJahr, fristBald};
+}
+const STEUER = {
+  title:"Steuer zurück", ic:"bank", col:"var(--teal)",
+  sub:() => { const c = steuerCalc(tstate("steuer")); return c.s === "ok" ? `${c.y}: ${c.title}` : "Lohnt sich eine Steuererklärung?"; },
+  status:() => { const c = steuerCalc(tstate("steuer")); return c.s === "ok" ? "ok" : "info"; },
+  form(st){
+    const y = +todayISO().slice(0, 4), c = steuerCalc(st);
+    return `<div style="margin-top:8px">${tSeg("jahr", st.jahr, [y - 4, y - 3, y - 2, y - 1].map(v => [v, String(v)]), "Steuerjahr")}</div>
+      <div class="group" style="margin-top:12px">
+        <div class="row"><span class="lbl"><span>Nur Minijob mit Pauschalsteuer</span><small>keine Lohnsteuerbescheinigung</small></span>${tSw("pausch", st.pausch, "Nur Minijob mit Pauschalsteuer")}</div>
+        <div class="row"><span class="lbl"><span>Sozialversicherungspflichtig</span><small>Ausbildung, Werkstudent, Job über 603 €</small></span>${tSw("sv", c.sv, "Sozialversicherungspflichtig")}</div>
+      </div>
+      <div class="sechead">Von der Lohnsteuerbescheinigung</div><div class="group">
+        <div class="row"><span class="lbl"><span>Bruttoarbeitslohn</span><small>Zeile 3</small></span>${tIn("brutto", st.brutto, "0")}</div>
+        <div class="row"><span class="lbl"><span>Lohnsteuer</span><small>Zeile 4</small></span>${tIn("lst", st.lst, "0")}</div>
+        <div class="row"><span class="lbl"><span>Solidaritätszuschlag</span><small>Zeile 5</small></span>${tIn("soli", st.soli, "0")}</div>
+        <div class="row"><span class="lbl"><span>Kirchensteuer</span><small>Zeile 6</small></span>${tIn("kist", st.kist, "0")}</div>
+      </div>`;
+  },
+  res(st){
+    const c = steuerCalc(st);
+    let h = `<div class="verdict-band ${c.s === "info" ? "ok" : c.s}" style="margin-top:18px;${c.s === "info" ? "background:var(--fill);color:var(--label)" : ""}"><div class="vb-top">${I(c.s === "info" ? "info" : stIcon[c.s])}<span>${esc(c.title)}</span></div><p>${esc(c.text)}</p></div>`;
+    h += `<div class="note ${c.fristBald ? "s" : "i"}" style="margin-top:12px">${I(c.fristBald ? "warn" : "calendar")}<span>Für ${c.y} kannst du die Erklärung bis zum 31.12.${c.fristJahr} abgeben (§ 46 EStG, § 169 AO).${c.fristBald ? " Die Frist läuft dieses Jahr ab!" : ""}</span></div>`;
+    if (c.brutto && !st.pausch) h += `<div class="sechead">Grob geschätzt</div><div class="group">
+      <div class="row"><span class="lbl">Bruttoarbeitslohn</span><span class="val">${esc(e0(c.brutto))}</span></div>
+      <div class="row"><span class="lbl">− Arbeitnehmer-Pauschbetrag</span><span class="val">${esc(e0(ANP(c.y)))}</span></div>
+      <div class="row"><span class="lbl">− Sonderausgaben-Pauschbetrag</span><span class="val">36 €</span></div>
+      ${c.sv ? `<div class="row"><span class="lbl"><span>− Sozialbeiträge</span><small>geschätzt 20 % vom Brutto</small></span><span class="val">${esc(e0(c.vorsorge))}</span></div>` : ""}
+      <div class="row"><span class="lbl" style="font-weight:600">≈ zu versteuern</span><span class="val" style="font-weight:600">${esc(e0(c.zve))}</span></div>
+      <div class="row"><span class="lbl">Grundfreibetrag ${c.y}</span><span class="val">${esc(e0(c.gfb))}</span></div></div>`;
+    h += `<div class="sechead">So geht's mit ELSTER</div><div class="group">
+      ${issueRow("info", "1. Konto anlegen", "Auf elster.de mit deiner Steuer-ID registrieren. Der Aktivierungsbrief kommt per Post (etwa 2 Wochen).")}
+      ${issueRow("info", "2. Formular wählen", `„Einkommensteuererklärung ${c.y}“ mit Anlage N (Job) und Anlage Vorsorgeaufwand.`)}
+      ${issueRow("info", "3. Daten abrufen", "Über den Belegabruf holt ELSTER deine Lohnsteuerbescheinigung automatisch.")}
+      ${issueRow("info", "4. Absenden", "Der Bescheid kommt nach einigen Wochen, das Geld aufs Konto.")}
+    </div>${S.profile.age < 18 ? `<div class="note i" style="margin-top:12px">${I("person")}<span>Unter 18: Mach die Erklärung zusammen mit deinen Eltern.</span></div>` : ""}
+    <div class="group ic" style="margin-top:14px">${linkRow("https://www.elster.de", "ELSTER öffnen", "elster.de · kostenlos, vom Finanzamt")}</div>
+    <div class="secfoot">Grobe Schätzung, keine Steuerberatung. Deine Steuer-ID speichert Stundenklar nicht.</div>`;
+    return h;
+  }
+};
+
+/* ---------- 9. Förder-Finder ---------- */
+function foerderCalc(st){
+  const p = S.profile, st0 = p.status, age = p.age, allein = st.wohnen === "allein", out = [];
+  const L = {
+    bab:[["https://www.arbeitsagentur.de/bildung/ausbildung/berufsausbildungsbeihilfe-bab", "BAB: Infos und Antrag", "arbeitsagentur.de"], ["https://www.babrechner.arbeitsagentur.de", "BAB-Rechner", "babrechner.arbeitsagentur.de"]],
+    bafoeg:[["https://www.xn--bafg-7qa.de", "BAföG: Infos", "bafög.de"], ["https://www.bafoeg-digital.de", "BAföG online beantragen", "bafoeg-digital.de"]],
+    kg:[["https://www.arbeitsagentur.de/familie-und-kinder", "Kindergeld bei der Familienkasse", "arbeitsagentur.de"]]
+  };
+  if (st0 === "betrAusb" || (st0 === "dual" && S.ausb.art === "integriert")){
+    if (allein && (st.weit || age >= 18 || st.kind)) out.push({s:"ok", t:"Berufsausbildungsbeihilfe (BAB)", x:"Du machst eine betriebliche Ausbildung und wohnst nicht bei deinen Eltern. Prüf, ob du BAB bekommst – das Geld gibt es erst ab dem Monat, in dem du den Antrag stellst.", l:L.bab});
+    else if (allein) out.push({s:"wait", t:"Berufsausbildungsbeihilfe (BAB)", x:"Unter 18 gibt es BAB meist nur, wenn der Betrieb von deinen Eltern aus nicht in angemessener Zeit erreichbar ist. Rechne es trotzdem durch.", l:L.bab});
+    else out.push({s:"info", t:"Berufsausbildungsbeihilfe (BAB)", x:"BAB gibt es nur, wenn du nicht bei deinen Eltern wohnst. Ziehst du für die Ausbildung aus, prüf es noch einmal.", l:L.bab});
+  }
+  if (st0 === "studium") out.push({s:"ok", t:"BAföG", x:"Viele, die Anspruch hätten, stellen nie einen Antrag – oft, weil sie glauben, ihre Eltern verdienten zu viel. Rechne es aus: Die Hälfte ist Zuschuss, die andere Hälfte ein zinsloses Darlehen.", l:L.bafoeg});
+  if (st0 === "schulAusb") out.push({s:"ok", t:"Schüler-BAföG", x:"Dauert deine schulische Ausbildung mindestens 2 Jahre und führt zu einem Berufsabschluss, gibt es Schüler-BAföG auch, wenn du bei deinen Eltern wohnst. Es ist ein reiner Zuschuss.", l:L.bafoeg});
+  if (st0 === "schule" && age >= 15) out.push({s:allein && st.weit ? "ok" : "info", t:"Schüler-BAföG", x:allein && st.weit ? "Du wohnst nicht bei deinen Eltern, weil die Schule zu weit weg ist. Dann kann es Schüler-BAföG geben, ab Klasse 10." : "Für die Oberstufe gibt es Schüler-BAföG nur, wenn du nicht bei deinen Eltern wohnst, weil die Schule von dort zu weit weg ist.", l:L.bafoeg});
+  if (st0 === "dual") out.push({s:"info", t:"BAföG im dualen Studium", x:"Mit Vergütung bekommst du meist kein BAföG, weil sie angerechnet wird. Ein Antrag kann sich lohnen, wenn deine Vergütung niedrig ist.", l:L.bafoeg});
+  out.push(allein
+    ? {s:"wait", t:"Wohngeld", x:"Kommt infrage, wenn du allein wohnst und weder BAföG noch BAB „dem Grunde nach“ bekommen kannst – zum Beispiel in einer Zweitausbildung. Frag beim Wohngeldamt deiner Stadt nach.", l:[]}
+    : {s:"info", t:"Wohngeld", x:"Nur mit eigener Wohnung. Solange du bei deinen Eltern wohnst, zählt der Haushalt deiner Eltern.", l:[]});
+  if (age < 18) out.push({s:"ok", t:"Kindergeld", x:"Deine Eltern bekommen es sowieso. Ab 18 brauchen sie für die Familienkasse einen Nachweis über Schule, Ausbildung oder Studium.", l:L.kg});
+  else if (age < 25) out.push({s:"ok", t:"Kindergeld läuft weiter", x:"Bis 25 gibt es Kindergeld während Schule, Ausbildung, Studium oder bis zu 4 Monaten Pause dazwischen. Deine Eltern müssen es nachweisen. Nach der ersten Ausbildung darfst du höchstens 20 Std. pro Woche jobben.", l:L.kg});
+  else out.push({s:"info", t:"Kindergeld", x:"Ab 25 gibt es kein Kindergeld mehr, außer in Sonderfällen wie einer Behinderung.", l:L.kg});
+  return out;
+}
+const FOERDER = {
+  title:"Förder-Finder", ic:"sparkle", col:"var(--purple)",
+  sub:() => { const n = foerderCalc(tstate("foerder")).filter(x => x.s === "ok").length; return n ? `${n} ${n === 1 ? "Leistung" : "Leistungen"} solltest du prüfen` : "Steht dir Geld zu?"; },
+  status:() => "info",
+  form(st){
+    const p = S.profile;
+    return `<div class="group" style="margin-top:8px">
+      <div class="row"><span class="lbl">Gerade</span><span class="val">${esc(STATUS[p.status]?.label || "")}, ${esc(String(p.age))} J.</span></div>
+      <button class="row action" data-action="tab" data-tab="profile"><span class="lbl">Im Profil ändern</span>${chev}</button></div>
+      <div style="margin-top:12px">${tSeg("wohnen", st.wohnen, [["eltern", "Bei den Eltern"], ["allein", "Eigene Wohnung"]], "Wohnen")}</div>
+      ${st.wohnen === "allein" ? `<div class="group" style="margin-top:12px">
+        <div class="row"><span class="lbl"><span>Von den Eltern aus zu weit weg</span><small>Betrieb oder Schule</small></span>${tSw("weit", st.weit, "Zu weit weg")}</div>
+        <div class="row"><span class="lbl">Ich habe ein eigenes Kind</span>${tSw("kind", st.kind, "Eigenes Kind")}</div></div>` : ""}`;
+  },
+  res(st){
+    const list = foerderCalc(st), lbl = {ok:"Prüf mal", wait:"Vielleicht", info:"Eher nicht"};
+    let h = `<div class="sechead">Für dich</div>`;
+    list.forEach(x => {
+      h += `<div class="group" style="margin-bottom:10px"><div class="issue ${x.s}">${I(x.s === "ok" ? "ok" : x.s === "wait" ? "warn" : "info")}<span><b style="display:block;font-weight:600">${esc(x.t)} <span class="stxt" style="font-weight:500"> · ${lbl[x.s]}</span></b>${esc(x.x)}</span></div>
+        ${x.l.map(([u, a, b]) => linkRow(u, a, b)).join("")}</div>`;
+    });
+    h += `<div class="secfoot">Grobe Vorprüfung ohne Einkommen der Eltern. Ob und wie viel du bekommst, sagt erst der Antrag. Stundenklar speichert nur deine zwei Antworten.</div>`;
+    return h;
+  }
+};
+
+/* ---------- 10. Geld-Kompass ---------- */
+const POSTEN = {rate:"Ratenkauf", later:"Später bezahlen", handy:"Handyvertrag", abo:"Abo", sonst:"Sonstiges"};
+function nextDue(tag){ const t = today0(); let d = new Date(t.getFullYear(), t.getMonth(), Math.min(tag, lastDayOf(iso(t).slice(0, 7)).getDate())); if (d < t){ const n = new Date(t.getFullYear(), t.getMonth() + 1, 1); d = new Date(n.getFullYear(), n.getMonth(), Math.min(tag, new Date(n.getFullYear(), n.getMonth() + 1, 0).getDate())); } return d; }
+function kompassCalc(st){
+  const auto = famInput().pay, ein = st.ein === "" || st.ein == null ? auto : num(st.ein);
+  const p = (st.p || []).map(x => ({...x, betrag:num(x.betrag), next:nextDue(+x.tag || 1)}));
+  const sum = p.reduce((a, x) => a + x.betrag, 0), q = ein > 0 ? sum / ein : 0;
+  const s = !p.length ? "info" : ein <= 0 ? "wait" : q > 0.5 ? "stop" : q > 0.3 ? "wait" : "ok";
+  const bald = p.filter(x => (x.next - today0()) / 864e5 <= 14).sort((a, b) => a.next - b.next);
+  return {auto, ein, p, sum, q, s, bald, later:p.some(x => x.art === "later"), raten:p.some(x => x.art === "rate" || x.art === "later" || x.art === "handy")};
+}
+const KOMPASS = {
+  title:"Geld-Kompass", ic:"calendar", col:"var(--orange)",
+  sub:() => { const c = kompassCalc(tstate("kompass")); return c.p.length ? `${e0(c.sum)} pro Monat verplant${c.ein > 0 ? ` · ${Math.round(c.q * 100)} %` : ""}` : "Raten, Abos und Handyvertrag im Blick"; },
+  status:() => kompassCalc(tstate("kompass")).s,
+  form(st){
+    const c = kompassCalc(st);
+    let h = `<div class="group" style="margin-top:8px"><div class="row"><span class="lbl"><span>Geld pro Monat</span><small>${c.auto ? `aus deinem Job: ${esc(e0(c.auto))}` : "z. B. Lohn und Taschengeld"}</small></span>${tIn("ein", st.ein, c.auto ? String(Math.round(c.auto)) : "0")}</div></div>`;
+    h += `<div class="sechead">Feste Ausgaben</div><div class="group">${c.p.length ? c.p.map((x, i) => `<div class="row">${sq(x.art === "later" ? "warn" : x.art === "handy" ? "phone" : x.art === "abo" ? "sparkle" : "euro", x.art === "later" ? "var(--red)" : "var(--gray)")}<span class="lbl"><span>${esc(x.name || POSTEN[x.art])}</span><small>${esc(POSTEN[x.art])} · am ${esc(String(x.tag))}.</small></span><span class="val">${esc(e2(x.betrag))}</span><button class="iconbtn" data-action="tdel" data-i="${i}" aria-label="${esc(x.name)} löschen">${I("trash")}</button></div>`).join("") : `<div class="row"><span class="lbl" style="color:var(--label2)">Noch nichts eingetragen</span></div>`}</div>
+      <div class="sechead">Neu eintragen</div><div class="group">
+        <div class="row"><input class="infield" id="kp-name" placeholder="Was? z. B. Sneaker, Handy" aria-label="Bezeichnung"></div>
+        <div class="row" style="gap:8px"><select class="infield" id="kp-art" aria-label="Art">${Object.entries(POSTEN).map(([k, v]) => `<option value="${k}">${esc(v)}</option>`).join("")}</select>
+          <input class="infield" id="kp-betrag" inputmode="decimal" placeholder="€ / Monat" style="max-width:7.5em" aria-label="Betrag pro Monat">
+          <input class="infield" id="kp-tag" inputmode="numeric" placeholder="Tag" style="max-width:4.5em" aria-label="Fällig am Tag"></div>
+        <button class="row action" data-action="tadd" style="justify-content:center">${I("plus")} Hinzufügen</button></div>`;
+    return h;
+  },
+  res(st){
+    const c = kompassCalc(st), lbl = {ok:"Gut im Rahmen", wait:"Viel verplant", stop:"Zu viel verplant", info:"Noch nichts eingetragen"};
+    let h = `<div class="card stack" style="margin-top:18px;gap:6px"><span class="stxt"><span class="dot ${c.s === "info" ? "ok" : c.s}"></span>${esc(lbl[c.s])}</span>
+      <div class="big">${c.ein > 0 && c.p.length ? Math.round(c.q * 100) + " %" : esc(e0(c.sum))}<small> ${c.ein > 0 && c.p.length ? `deines Geldes sind fest verplant (${esc(e0(c.sum))})` : "pro Monat verplant"}</small></div>
+      ${c.p.length ? `<div class="prog"><i class="${c.s === "stop" ? "s" : c.s === "wait" ? "w" : ""}" style="width:${Math.min(100, c.q * 100)}%"></i></div><span style="color:var(--label2);font-size:13px">Faustregel: höchstens ein Drittel fest verplanen, damit Luft für Unerwartetes bleibt.</span>` : ""}</div>`;
+    if (c.bald.length) h += `<div class="sechead">Bald fällig</div><div class="group">${c.bald.map(x => `<div class="row"><span class="lbl"><span>${esc(x.name || POSTEN[x.art])}</span><small>${esc(dMed(x.next))}</small></span><span class="val">${esc(e2(x.betrag))}</span></div>`).join("")}</div>`;
+    if (c.p.length) h += `<div style="margin-top:12px"><button class="btn soft" data-action="tics">${I("calendar")}In den Kalender übernehmen</button></div><div class="secfoot">Als Kalenderdatei mit monatlicher Erinnerung – ganz ohne Konto.</div>`;
+    const warn = [];
+    if (c.later) warn.push(issueRow("stop", "„Später bezahlen“ ist ein Kredit", "Zahlst du zu spät, kommen Mahngebühren und Zinsen dazu, dann ein Inkassobüro. Ein SCHUFA-Eintrag kann dir Jahre später den Handyvertrag oder die Wohnung kosten."));
+    if (S.profile.age < 18 && c.raten) warn.push(issueRow("wait", "Unter 18", "Für Ratenkäufe und Handyverträge brauchst du die Zustimmung deiner Eltern (§§ 107, 108 BGB). Mit eigenem Geld darfst du nur kaufen, was du sofort ganz bezahlst (§ 110 BGB, „Taschengeldparagraf“)."));
+    if (warn.length) h += `<div class="sechead">Achtung</div><div class="group">${warn.join("")}</div>`;
+    h += `<div class="sechead">Von der Mahnung zur SCHUFA</div><div class="group">
+      ${issueRow("info", "1. Erinnerung und Mahnung", "Sofort zahlen oder anrufen und eine Ratenzahlung vereinbaren.")}
+      ${issueRow("info", "2. Mahngebühren und Inkasso", "Die Kosten steigen schnell. Prüf, ob die Forderung stimmt.")}
+      ${issueRow("wait", "3. Mahnbescheid vom Gericht", "Ist die Forderung falsch: innerhalb von 2 Wochen widersprechen.")}
+      ${issueRow("stop", "4. SCHUFA-Eintrag", "Meist erst nach mehreren Mahnungen. Er bleibt in der Regel bis zu 3 Jahre gespeichert.")}
+    </div><div class="group ic" style="margin-top:14px">
+      ${linkRow("https://www.meine-schulden.de", "Kostenlose Schuldnerberatung finden", "meine-schulden.de")}
+      ${linkRow("https://www.meineschufa.de", "SCHUFA: kostenlose Datenkopie", "meineschufa.de · „Datenkopie nach Art. 15 DSGVO“ wählen, kein Abo")}
+    </div><div class="secfoot">Keine Kontoverbindung, alles bleibt auf deinem Gerät. Allgemeine Info, keine Finanzberatung.</div>`;
+    return h;
+  }
+};
+function kompassICS(){
+  const c = kompassCalc(tstate("kompass")), st = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+  const lines = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Stundenklar//Geld-Kompass//DE", "CALSCALE:GREGORIAN"];
+  c.p.forEach((x, i) => { const d = x.next, ds = `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}`;
+    lines.push("BEGIN:VEVENT", `UID:stundenklar-${i}-${ds}@stundenklar`, `DTSTAMP:${st}`, `DTSTART;VALUE=DATE:${ds}`, `RRULE:FREQ=MONTHLY;BYMONTHDAY=${Math.min(28, +x.tag || 1) === (+x.tag || 1) ? (+x.tag || 1) : -1}`,
+      `SUMMARY:${(x.name || POSTEN[x.art]).replace(/[,;\\]/g, " ")} – ${e2(x.betrag).replace(/ /g, " ")} fällig`, "BEGIN:VALARM", "TRIGGER:-P1D", "ACTION:DISPLAY", "DESCRIPTION:Morgen fällig", "END:VALARM", "END:VEVENT"); });
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
+}
+
+const TOOLS = {lohn:LOHN, urlaub:URLAUB, kuend:KUEND, vertrag:VERTRAG, steuer:STEUER, foerder:FOERDER, kompass:KOMPASS};
+function toolRow(id){ const T = TOOLS[id], s = T.status(); return `<button class="row" data-action="tool" data-id="${id}">${sq(T.ic, T.col)}<span class="lbl"><span>${esc(T.title)}</span><small class="one">${esc(T.sub())}</small></span>${s !== "info" ? `<span class="stxt"><span class="dot ${s}"></span>${stLabel[s]}</span>` : ""}${chev}</button>`; }
+function openTool(id){ if (!TOOLS[id]) return; openSheet(shead(TOOLS[id].title, "", doneBtn) + `<div class="sbody" id="tool-body"></div>`, {kind:"tool", id, open:null}); renderTool(); }
+function renderTool(){
+  const c = sheetCtx; if (c?.kind !== "tool") return;
+  const T = TOOLS[c.id], st = tstate(c.id), box = document.getElementById("tool-body"); if (!box) return;
+  box.innerHTML = T.form(st) + `<div id="tool-res">${T.res(st)}</div>`;
+}
+function renderToolRes(){
+  const c = sheetCtx; if (c?.kind !== "tool") return;
+  const T = TOOLS[c.id], st = tstate(c.id), el = document.getElementById("tool-res");
+  if (T.update) T.update(st);
+  if (el) el.innerHTML = T.res(st);
+}
+function toolInput(t, full){
+  const c = sheetCtx; if (c?.kind !== "tool") return;
+  const tt = t.dataset.tt, v = tt === "bool" ? t.checked : tt === "num" ? (t.value.trim() === "" ? "" : num(t.value)) : t.value;
+  if (t.dataset.tjob) S.job[t.dataset.tjob] = v; else setDeep(tstate(c.id), t.dataset.tf, v);
+  save();
+  if (full) renderTool(); else renderToolRes();
+}
+function checkRechteHTML(){
+  return `<div class="secfoot" style="margin-top:14px">Deine Rechte im Job und in der Ausbildung – ausgerechnet mit deinen Angaben und mit fertigen Briefen.</div>
+    <div class="group ic">${["urlaub", "kuend", "vertrag", "lohn"].map(toolRow).join("")}</div>
+    <div class="sechead">Hilfe</div><div class="group ic">
+      ${infoRow("phone", "var(--green)", "Mindestlohn-Hotline: 030 60 28 00 28", "Mo–Do 8–20 Uhr, kostenlos")}
+      ${infoRow("person", "var(--indigo)", "Ausbildungsberatung der Kammer", "IHK oder Handwerkskammer, kostenlos und vertraulich")}
+      ${infoRow("heart", "var(--pink)", "Nummer gegen Kummer: 116 111", "Mo–Sa 14–20 Uhr, anonym und kostenlos")}
+    </div><div class="secfoot">Allgemeine Info, keine Rechtsberatung. Im Zweifel helfen Kammer, Gewerkschaftsjugend oder Verbraucherzentrale.</div>`;
+}
+
 /* ===== Bildschirm: Geld & Familie ===== */
 function renderMoney(){
   const inp = famInput(), fam = evaluate(inp), sum = famSummary(fam.cards), p = S.profile, j = S.job;
@@ -1966,6 +2540,7 @@ function renderMoney(){
     const [ic, col] = TOPIC[c.id];
     return `<button class="row" data-action="fam-detail" data-id="${c.id}">${sq(ic, col)}<span class="lbl"><span>${esc(c.title)}</span><small class="one">${esc(c.verdict)}</small></span><span class="stxt"><span class="dot ${c.s}"></span>${stLabel[c.s]}</span>${chev}</button>`; }).join("")}</div>`;
   h += `<div class="secfoot">Tippe auf eine Ampel für Details.</div>`;
+  h += `<div class="sechead">Geld-Werkzeuge</div><div class="group ic">${["lohn", "steuer", "foerder", "kompass"].map(toolRow).join("")}</div>`;
   const rows = [["Alter", `${p.age} Jahre`], ["Gerade", STATUS[p.status]?.label], ["Job", JOBS[j.type]?.label]];
   if (["minijob","midijob","verguetung"].includes(j.type)) rows.push(["Verdienst pro Monat", e0(inp.pay)]);
   if (j.type === "ferienjob") rows.push([`Verdienst ${todayISO().slice(0, 4)}`, e0(inp.ftotal)], ["Arbeitstage", String(inp.fdays)]);
@@ -2066,19 +2641,25 @@ const DEMO_STEPS = {
     ["Eiscafé öffnen", "Passt mit Änderungen. Nachricht an den Arbeitgeber zeigen."],
     ["Paketannahme", "Startgebühr und Pakete weiterleiten: Betrug erkannt."],
     ["Heute › Passende Jobs finden", "Stellen in Ahaus, für Mia geprüft. Mit Link-Dienst live aus der Jobbörse."],
+    ["Geld › Lohn-Check", "Für Juli fehlen 61,50 €. Fertiger Brief an den Supermarkt."],
+    ["Job-Check › Rechte", "Urlaub für den Ferienjob, Vertrags-Check mit fehlenden Angaben."],
     ["Geld & Familie", "Krankenkasse, Kindergeld und Steuern auf einen Blick."]]},
   leon:{intro:"Leon, 17, lernt Kaufmann im Einzelhandel, 2. Ausbildungsjahr. In der Demo ist heute Donnerstag, der 19. November 2026.", steps:[
     ["Heute zeigen", "Woche mit Berufsschule, Überstunden, Ampel bei der Vergütung."],
     ["Hinweis öffnen", "Nach 7 Stunden Berufsschule noch in den Laden: nicht erlaubt."],
     ["Job-Check › Ausbildung", "780 € liegen unter der Mindestvergütung von 805 €."],
     ["Job-Check › Anzeige: Samstagsjob", "48 Stunden und 6 Tage: passt nicht. Dafür ein Ausbildungsplatz mit 940 €."],
-    ["Stunden › Berichtsheft", "Die Notizen jeder Woche, fertig fürs Berichtsheft."]]},
+    ["Stunden › Berichtsheft", "Die Notizen jeder Woche, fertig fürs Berichtsheft."],
+    ["Geld › Lohn-Check", "Brief wegen der Mindestvergütung: 25 € fehlen jeden Monat."],
+    ["Job-Check › Rechte › Kündigung", "Anderen Beruf lernen: 4 Wochen Frist, fertiger Kündigungsbrief."]]},
   sara:{intro:"Sara, 20, studiert dual BWL mit Praxisphasen. In der Demo ist heute Donnerstag, der 19. November 2026.", steps:[
     ["Heute zeigen", "Hochschule und Betrieb in einer Woche."],
     ["Hinweis öffnen", "11 Stunden am Messetag: Erlaubt sind höchstens 10."],
     ["Job-Check › Anzeige: Werkstudent", "Mit dem Studium 60 Stunden: passt nicht. Nachhilfe passt besser."],
     ["Messe-Promoter", "Unter Mindestlohn, unbezahltes Probearbeiten: so passt es."],
-    ["Geld & Familie", "Steuern auf Gelb: über dem Grundfreibetrag."]]}
+    ["Geld & Familie", "Steuern auf Gelb: über dem Grundfreibetrag."],
+    ["Geld › Steuer zurück", "Für 2025 kommen etwa 312 € zurück. So geht's mit ELSTER."],
+    ["Geld › Geld-Kompass", "13 % fest verplant. Warnung bei „Später bezahlen“."]]}
 };
 function renderAside(){
   const theme = document.documentElement.dataset.theme || "system";
@@ -2109,7 +2690,7 @@ function openSheet(html, ctx = {}){
   requestAnimationFrame(() => { sheet.classList.add("open"); scrim.classList.add("open"); });
   setTimeout(() => sheet.querySelector("[data-autofocus]")?.focus(), 400);
 }
-function closeSheet(){ const k = sheetCtx?.kind; sheet.classList.remove("open"); scrim.classList.remove("open"); sheetCtx = null; if (k === "ad" || k === "adload" || k === "reco"){ syncRecoInputs(); renderCheck(); } }
+function closeSheet(){ const k = sheetCtx?.kind; sheet.classList.remove("open"); scrim.classList.remove("open"); sheetCtx = null; if (k === "ad" || k === "adload" || k === "reco"){ syncRecoInputs(); renderCheck(); } if (k === "tool"){ renderToday(); renderMoney(); renderCheck(); } }
 const shead = (title, left = "", right = "") => `<div class="shead"><span class="l">${left}</span><b id="sheet-title">${esc(title)}</b><span class="r">${right}</span></div>`;
 const doneBtn = `<button class="textbtn" style="font-weight:600" data-action="sheet-close">Fertig</button>`;
 
@@ -2364,6 +2945,33 @@ document.addEventListener("click", e => {
   if (a === "ad-skip" && sheetCtx?.kind === "adtext"){ openAdResult(parseAd("", sheetCtx.url || "")); return; }
   if (a === "ad-hist"){ const e = (S.ads || []).find(x => x.id === el.dataset.id); if (e) openAdResult(e.ad, {histId:e.id, noSave:true}); return; }
   if (a === "ad-hist-clear"){ S.ads = []; save(); renderCheck(); return; }
+  if (a === "tool"){ openTool(el.dataset.id); return; }
+  if (sheetCtx?.kind === "tool"){
+    const st = tstate(sheetCtx.id);
+    if (a === "tset"){ const v = el.dataset.v; setDeep(st, el.dataset.tf, /^\d+$/.test(v) && el.dataset.tf === "jahr" ? +v : v); sheetCtx.open = null; save(); renderTool(); return; }
+    if (a === "tstep"){
+      const f = el.dataset.tf, d = +el.dataset.d;
+      if (f === "tage"){ st.tage = Math.min(6, Math.max(1, urlaubTage(st) + d)); }
+      if (f === "probe"){ const c = kuendCalc(st), lo = c.art === "ausb" ? 1 : 0, hi = c.art === "ausb" ? 4 : 6; st.probe = Math.min(hi, Math.max(lo, c.probe + d)); }
+      save(); renderTool(); return;
+    }
+    if (a === "ttoggle"){ setDeep(st, el.dataset.tf, !getDeep(st, el.dataset.tf)); save(); const sc = document.querySelector("#sheet .sbody")?.scrollTop; renderTool(); const b = document.querySelector("#sheet .sbody"); if (b && sc != null) b.scrollTop = sc; return; }
+    if (a === "tletter"){ sheetCtx.open = sheetCtx.open === el.dataset.k ? null : el.dataset.k; renderToolRes(); return; }
+    if (a === "tcopy"){ const L = TOOLS[sheetCtx.id].letter(st, el.dataset.k), text = (L.subject ? "Betreff: " + L.subject + "\n\n" : "") + L.body;
+      try { navigator.clipboard.writeText(text).then(() => hud("Kopiert"), () => fallbackCopy(text)); } catch(err) { fallbackCopy(text); } return; }
+    if (a === "tdel"){ st.p.splice(+el.dataset.i, 1); save(); renderTool(); return; }
+    if (a === "tadd"){
+      const name = document.getElementById("kp-name")?.value.trim() || "", art = document.getElementById("kp-art")?.value || "sonst";
+      const betrag = num(document.getElementById("kp-betrag")?.value), tag = Math.round(num(document.getElementById("kp-tag")?.value));
+      if (!betrag){ hud("Betrag eintragen"); document.getElementById("kp-betrag")?.focus(); return; }
+      if (!(tag >= 1 && tag <= 31)){ hud("Tag von 1 bis 31 eintragen"); document.getElementById("kp-tag")?.focus(); return; }
+      st.p = [...(st.p || []), {name, art, betrag, tag}]; save(); renderTool(); hud("Hinzugefügt"); return;
+    }
+    if (a === "tics"){
+      const blob = new Blob([kompassICS()], {type:"text/calendar;charset=utf-8"}), url = URL.createObjectURL(blob), x = document.createElement("a");
+      x.href = url; x.download = "stundenklar-zahlungen.ics"; document.body.appendChild(x); x.click(); x.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000); hud("Kalenderdatei erstellt"); return;
+    }
+  }
   if (a === "goto-reco"){
     UI.jcMode = "anzeige"; renderCheck(); showTab("check");
     setTimeout(() => { const sc = document.getElementById("sc-check"), card = document.getElementById("reco-card"); if (sc && card) sc.scrollTo({top:sc.scrollTop + card.getBoundingClientRect().top - sc.getBoundingClientRect().top - 108, behavior:"smooth"}); }, 380);
@@ -2516,11 +3124,14 @@ document.addEventListener("change", e => {
     return;
   }
 });
+document.addEventListener("input", e => { const t = e.target; if (t.dataset && (t.dataset.tf || t.dataset.tjob) && sheetCtx?.kind === "tool" && t.type !== "checkbox") toolInput(t, false); });
+document.addEventListener("change", e => { const t = e.target; if (t.dataset && (t.dataset.tf || t.dataset.tjob) && sheetCtx?.kind === "tool" && (t.type === "checkbox" || t.type === "date")) toolInput(t, t.type === "date" || (sheetCtx.id === "foerder")); });
 document.addEventListener("input", e => { const t = e.target; if (t.dataset && t.dataset.adf && t.tagName !== "SELECT" && t.type !== "checkbox") setAdField(t, false); });
 document.addEventListener("change", e => { const t = e.target; if (t.dataset && t.dataset.adf && (t.tagName === "SELECT" || t.type === "checkbox")) setAdField(t, true); });
 document.addEventListener("keydown", e => {
   if (e.key === "Enter" && e.target.id === "ad-url"){ e.preventDefault(); handleAdInput(e.target.value); return; }
   if (e.key === "Enter" && (e.target.id === "reco-wo" || e.target.id === "reco-was")){ e.preventDefault(); openReco(); return; }
+  if (e.key === "Enter" && ["kp-name", "kp-betrag", "kp-tag"].includes(e.target.id)){ e.preventDefault(); document.querySelector('[data-action="tadd"]')?.click(); return; }
   if (e.key === "Enter" && e.target.id === "dienst-url"){ e.preventDefault(); document.querySelector('[data-action="dienst-save"]')?.click(); return; }
   if (e.key === "Escape"){ if (document.getElementById("alertwrap").classList.contains("open")) return; closeSheet(); }
 });
