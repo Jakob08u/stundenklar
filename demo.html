@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.workers.dev; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="description" content="Demo von Stundenklar mit Mia, Leon und Sara.">
+<meta name="description" content="Demo von Stundenklar mit Paul, Leon und Sarah.">
 <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -430,7 +430,7 @@ a.btn{text-decoration:none}
 <script src="config.js"></script>
 <script>
 "use strict";
-const MODE = "demo";            // "demo" = Mias Sommer mit Beispieldaten, "live" = leer zum Ausprobieren
+const MODE = "demo";            // "demo" = Pauls Sommer mit Beispieldaten, "live" = leer zum Ausprobieren
 const DEMO = MODE === "demo";
 const DEMO_TODAY = "2026-08-06";    // In der Demo ist heute Donnerstag, 6. August 2026
 const STORE = "stundenklar-app-v1";
@@ -601,7 +601,7 @@ function demoMia(){
   f("2026-08-01", "08:00", "12:00", 0, "Inventur");
   ["2026-08-03","2026-08-04","2026-08-05"].forEach(d => f(d, "08:00", "14:30", 30));
   return {persona:"mia", demoToday:"2026-08-06",
-    profile:{name:"Mia", age:15, status:"schule", vsp:true, land:"Nordrhein-Westfalen", ort:"Ahaus", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
+    profile:{name:"Paul", age:15, status:"schule", vsp:true, land:"Nordrhein-Westfalen", ort:"Ahaus", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
     job:{title:"Supermarkt Brandt", type:"ferienjob", activity:"handel", wage:10.5, employer:"betrieb", monthly:0, weekly:0, since:"2026-07-20", until:"2026-08-21"},
     ausb:defaultAusb(), shifts, ads:[], timer:null, onboarded:true, lastFerien:true,
     tools:{lohn:{m:{"2026-07":{got:600, abr:false}}}, vertrag:{c:{job:{name:true, lohn:true, beginn:true, ende:true, taet:true}}}}};
@@ -632,7 +632,7 @@ function demoSara(){
   hs("2026-11-09", "Marketing"); hs("2026-11-10", "Wirtschaftsrecht"); w("2026-11-11", "Angebote eingeholt"); w("2026-11-12", "Meeting Einkauf"); w("2026-11-13", "Projektbericht geschrieben");
   w("2026-11-16", "Messe vorbereitet"); w("2026-11-17", "Messe-Aufbau", "08:00", "19:30", 30); w("2026-11-18", "Nachbereitung Messe");
   return {persona:"sara", demoToday:"2026-11-19",
-    profile:{name:"Sara", age:20, status:"dual", vsp:false, land:"Hessen", ort:"Kassel", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
+    profile:{name:"Sarah", age:20, status:"dual", vsp:false, land:"Hessen", ort:"Kassel", erst:"ja", kv:"gkv", gs:false, kiz:false, uvg:false, bafoeg:false},
     job:{title:"Weber Logistik GmbH", type:"verguetung", activity:"buero", wage:0, employer:"betrieb", monthly:1150, weekly:0, since:"2025-10-01"},
     ausb:{beruf:"BWL (dual)", start:2025, jahr:2, soll:40, urlaub:25, art:"praxis", eltern:false},
     shifts, ads:[], timer:null, onboarded:true, lastFerien:false,
@@ -640,9 +640,9 @@ function demoSara(){
       foerder:{wohnen:"allein"}, kompass:{ein:"", p:[{name:"Handyvertrag", art:"handy", betrag:19.99, tag:15}, {name:"Winterjacke", art:"later", betrag:79.99, tag:22}, {name:"Streaming", art:"abo", betrag:13.99, tag:1}, {name:"Fitnessstudio", art:"abo", betrag:29.9, tag:3}]}}};
 }
 const PERSONAS = {
-  mia:{label:"Mia, 15", sub:"Ferienjob im Supermarkt", make:demoMia},
+  mia:{label:"Paul, 15", sub:"Ferienjob im Supermarkt", make:demoMia},
   leon:{label:"Leon, 17", sub:"Ausbildung im Einzelhandel", make:demoLeon},
-  sara:{label:"Sara, 20", sub:"Duales Studium BWL", make:demoSara}
+  sara:{label:"Sarah, 20", sub:"Duales Studium BWL", make:demoSara}
 };
 function demoState(id = "mia"){ return (PERSONAS[id] || PERSONAS.mia).make(); }
 function emptyState(){
@@ -2640,13 +2640,13 @@ document.querySelectorAll(".screen").forEach(sc => sc.addEventListener("scroll",
 
 /* ===== Seitenleiste am Rechner ===== */
 const DEMO_STEPS = {
-  mia:{intro:"Mias Sommer: 15 Jahre, Ferienjob im Supermarkt. In der Demo ist heute Donnerstag, der 6. August 2026.", steps:[
+  mia:{intro:"Pauls Sommer: 15 Jahre, Ferienjob im Supermarkt. In der Demo ist heute Donnerstag, der 6. August 2026.", steps:[
     ["Heute zeigen", "Woche, Ferientage-Zähler und Hinweise."],
     ["Schicht nachtragen", "8 bis 17 Uhr, Pause 0. Die App warnt sofort."],
     ["Job-Check › Anzeige: Café-Aushilfe", "Passt nicht: zu jung, zu spät, zu viele Stunden. Bessere Angebote darunter."],
     ["Eiscafé öffnen", "Passt mit Änderungen. Nachricht an den Arbeitgeber zeigen."],
     ["Paketannahme", "Startgebühr und Pakete weiterleiten: Betrug erkannt."],
-    ["Heute › Passende Jobs finden", "Stellen in Ahaus, für Mia geprüft. Mit Link-Dienst live aus der Jobbörse."],
+    ["Heute › Passende Jobs finden", "Stellen in Ahaus, für Paul geprüft. Mit Link-Dienst live aus der Jobbörse."],
     ["Geld › Lohn-Check", "Für Juli fehlen 61,50 €. Fertiger Brief an den Supermarkt."],
     ["Job-Check › Rechte", "Urlaub für den Ferienjob, Vertrags-Check mit fehlenden Angaben."],
     ["Geld & Familie", "Krankenkasse, Kindergeld und Steuern auf einen Blick."]]},
@@ -2658,7 +2658,7 @@ const DEMO_STEPS = {
     ["Stunden › Berichtsheft", "Die Notizen jeder Woche, fertig fürs Berichtsheft."],
     ["Geld › Lohn-Check", "Brief wegen der Mindestvergütung: 25 € fehlen jeden Monat."],
     ["Job-Check › Rechte › Kündigung", "Anderen Beruf lernen: 4 Wochen Frist, fertiger Kündigungsbrief."]]},
-  sara:{intro:"Sara, 20, studiert dual BWL mit Praxisphasen. In der Demo ist heute Donnerstag, der 19. November 2026.", steps:[
+  sara:{intro:"Sarah, 20, studiert dual BWL mit Praxisphasen. In der Demo ist heute Donnerstag, der 19. November 2026.", steps:[
     ["Heute zeigen", "Hochschule und Betrieb in einer Woche."],
     ["Hinweis öffnen", "11 Stunden am Messetag: Erlaubt sind höchstens 10."],
     ["Job-Check › Anzeige: Werkstudent", "Mit dem Studium 60 Stunden: passt nicht. Nachhilfe passt besser."],
